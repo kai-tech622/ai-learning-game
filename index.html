@@ -160,34 +160,48 @@ p{margin:.5em 0}
 .label.voice{background:#f1ecfb;color:#5b3ea1}
 .hook{font-weight:900;font-size:1.05rem;margin:0}
 .extra{background:var(--paper2);border-radius:12px;padding:8px 12px;color:#7a5418;margin:10px 0 0;font-size:.95rem}
-.data-card{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:linear-gradient(135deg,#fff8e4,#ffeec7);border-radius:18px;padding:16px 18px;border:3px solid #fff;box-shadow:var(--shadow);animation:rise .4s ease both .2s}
-@media (max-width:560px){.data-card{grid-template-columns:1fr}}
-.bignum{font-size:2.6rem;font-weight:900;color:#c9780a;line-height:1;white-space:nowrap;text-shadow:0 3px 0 rgba(0,0,0,.08)}
-.bignum small{display:block;font-size:.8rem;color:#8a5a00;font-weight:700;margin-top:6px;white-space:normal;max-width:12em}
-.data-card p{margin:.2em 0}
-.chart{grid-column:1/-1;margin:4px 0 0;background:rgba(255,255,255,.75);border-radius:14px;padding:12px 14px 10px}
-.chart figcaption{font-weight:800;font-size:.95rem;margin-bottom:8px}
-.ch-legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted);margin:-2px 0 6px}
-.ch-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.ch-rows{display:grid;gap:6px}
-.ch-group{font-size:.78rem;font-weight:700;color:var(--muted);margin-top:4px}
-.ch-row{display:grid;grid-template-columns:minmax(6.5em,9.5em) 1fr 3em;align-items:center;gap:10px;font-size:.88rem;padding:2px 0;border-radius:6px}
-.ch-row:hover{background:rgba(47,116,192,.08)}
-.ch-label{color:var(--ink)}
-.ch-val{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
-.ch-track{position:relative;height:16px;border-left:1px solid #d9cdb4}
-.ch-rows.div .ch-track{border-left:0}
-.ch-zero{position:absolute;top:-4px;bottom:-4px;width:1px;background:#9c97a6}
-.ch-bar{position:absolute;top:0;height:100%;border-radius:0 4px 4px 0;transform-origin:left;animation:grow .7s cubic-bezier(.2,.8,.2,1) both .45s}
-.ch-bar.left{border-radius:4px 0 0 4px;transform-origin:right}
-.ch-bar.s0,.ch-legend .s0,.ch-bar.pos{background:#2f74c0}
-.ch-bar.s1,.ch-legend .s1,.ch-bar.neg{background:#c2452d}
-.ch-axisrow:hover{background:none}
-.ch-axis{display:grid;grid-template-columns:1fr auto 1fr;font-size:.72rem;color:var(--muted)}
-.ch-axis span:last-child{text-align:right}
-.ch-note{font-size:.76rem;color:var(--muted);margin:8px 0 0!important;line-height:1.5}
+.data-card{display:flex;flex-direction:column;gap:10px;background:linear-gradient(135deg,#fff8e4,#ffeec7);border-radius:18px;padding:16px 18px;border:3px solid #fff;box-shadow:var(--shadow);animation:rise .4s ease both .2s}
+.data-card .label{align-self:flex-start}
+.data-card p{margin:0}
+.data-card .headline{font-size:1.25rem;font-weight:900;line-height:1.45;color:var(--ink);text-wrap:balance}
+.chart{--c-hi:#2f74c0;--c-mute:#a9c2df;--c-rest:#e8dcc4;--c-dot:#c2452d;--c-empty:#e8dcc4;--c-low:#9a3a26;--c-low-bg:#fbe3dc;--c-same:#2c5e8f;--c-same-bg:#e1ecf7;--c-base:#5f5a6b;--c-base-bg:#ece8f0;
+  margin:0;background:#fffdf7;border-radius:14px;padding:14px 16px 12px;border:1px solid #f0e2c4}
+.chart figcaption{font-weight:800;font-size:.95rem;margin-bottom:10px;color:var(--ink)}
+.ch-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);margin:-4px 0 8px}
+.ch-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ch-legend .hi{background:var(--c-hi)}.ch-legend .rest{background:var(--c-rest)}
+.ch-rows{display:grid;gap:7px}
+.ch-group{font-size:.8rem;font-weight:800;color:var(--muted);margin-top:4px}
+.ch-row{display:grid;grid-template-columns:minmax(6.5em,11em) minmax(0,1fr) 3em;align-items:center;gap:10px;font-size:.9rem;padding:2px 4px;border-radius:6px}
+.ch-rows.tagged .ch-row{grid-template-columns:minmax(6.5em,8.5em) minmax(0,1fr) 3em 8.5em}
+.ch-row:hover{background:rgba(47,116,192,.07)}
+.ch-row.is-hi .ch-label,.ch-row.is-hi .ch-val{font-weight:800}
+.ch-label{color:var(--ink);min-width:0}
+.ch-val{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+.ch-track{position:relative;display:flex;height:18px;border-left:1px solid #d6c8aa}
+.ch-track.split{border-left:0;gap:2px}
+.ch-bar{display:block;height:100%;background:var(--c-mute);border-radius:0 4px 4px 0;transform-origin:left;animation:grow .7s cubic-bezier(.2,.8,.2,1) both .45s}
+.ch-bar.hi{background:var(--c-hi)}
+.ch-track.split .ch-bar{border-radius:4px 0 0 4px}
+.ch-rest{display:block;height:100%;background:var(--c-rest);border-radius:0 4px 4px 0}
+.ch-tag{font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:999px;justify-self:start;white-space:nowrap}
+.ch-tag.low{color:var(--c-low);background:var(--c-low-bg)}
+.ch-tag.same{color:var(--c-same);background:var(--c-same-bg)}
+.ch-tag.base{color:var(--c-base);background:var(--c-base-bg)}
+.ch-dots{display:flex;flex-wrap:wrap;gap:16px 28px}
+.ch-dotgroup{display:flex;flex-direction:column;gap:6px}
+.ch-dothead{display:flex;justify-content:space-between;gap:12px;font-size:.92rem}
+.ch-grid{display:grid;grid-template-columns:repeat(10,11px);gap:3px}
+.ch-grid i{width:11px;height:11px;border-radius:50%;background:var(--c-empty)}
+.ch-grid i.on{background:var(--c-dot)}
+.ch-read{font-size:.82rem;color:var(--ink);margin:10px 0 0!important;line-height:1.6}
+.ch-src{font-size:.75rem;color:var(--muted);margin:4px 0 0!important}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@media (max-width:560px){.ch-row{grid-template-columns:6.5em 1fr 2.6em;gap:8px;font-size:.82rem}}
+@media (max-width:560px){
+  .data-card .headline{font-size:1.1rem}
+  .ch-row,.ch-rows.tagged .ch-row{grid-template-columns:6.5em minmax(0,1fr) 2.8em;gap:8px;font-size:.84rem}
+  .ch-tag{grid-column:2/-1;margin-top:-2px}
+}
 .quote-card{position:relative;background:#fff;border-radius:18px;padding:16px 18px 14px 64px;border:3px solid #fff;box-shadow:var(--shadow);animation:rise .4s ease both .3s}
 .quote-card::before{content:"「";position:absolute;left:14px;top:2px;font-size:3.2rem;color:#c7b8ea;font-weight:900;line-height:1}
 .quote-card q{quotes:none;font-size:1.12rem;font-weight:700;display:block}
@@ -512,7 +526,7 @@ function costIcons(n){
 
 const ROUNDS = [
   { title:"第一關：公民報告",
-    big:{ num:"947", unit:"名大學生的調查", desc:"把 AI 當學習幫手，比讓 AI 代寫學得更好" },
+    big:{ headline:"每 10 個 15 歲學生，將近 3 個每週用 AI 起草作業" },
     scene:function(){ return '<p class="scene">公民老師出了一份報告，題目是〈青年的權利與公民參與〉，下週要交。你打算怎麼用 AI？</p>'+
       (S.judge<=0 ? '<p class="inner-voice">你把 AI 當成比較聰明的 Google：問了，就會得到正確答案。</p>' : ''); },
     flavor:{ chengen:"學校規定不能在課堂上用 AI，你只能回家自己摸索。", zhihan:"這週打工排了四天班，能寫報告的時間不多。",
@@ -538,14 +552,16 @@ const ROUNDS = [
         hook:"你選擇完全不靠 AI。這份謹慎很常見，代價是你得獨自花更多時間。",
         text:"你花了很多時間，報告扎實但不夠完整。你理解了內容，只是沒有用到 AI 能提供的協助。" }
     ]; },
-    fact:'一項研究調查了 947 名美國大學生：把 AI 當學習幫手的人，對自己的學業更有信心，也更有創造力；讓 AI 代寫的人，學習成果反而比較差（Zhang et al. 2024，轉引自 Manganello et al. 2026：6）。',
+    fact:'怎麼用，比用多少更重要。一項針對 947 名美國大學生的研究發現，把 AI 當學習幫手的人，對自己的學業更有信心，也更有創造力；讓 AI 代寫的人，學習成果反而比較差（Zhang et al. 2024，轉引自 Manganello et al. 2026：6）。',
     voices:[ { q:"它幾秒內就給出答案，大大縮短了我們的時間，也減少了我們的努力。", who:"一位中國研究生描述剛開始用 AI 的感受", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
       { q:"AI 讓人得到靈感、想法、指引和建議，但它也不是可以盲目信任的東西。", who:"一位挪威女大學生談自己怎麼看待 AI", src:"Møgelvang et al. 2024，轉引自 Manganello et al. 2026：6" },
       { q:"AI 可以先當我學習時的『聆聽者』，接收我的想法和架構，幫我整理思緒；之後再把它當成『知識延伸者』。", who:"一位中國研究生說明自己怎麼和 AI 分工", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5-6" } ],
-    chart:{ title:"家庭背景和「把 AI 當學習幫手」有關嗎？", type:"div", scale:[-0.3,0.3],
-      rows:[ { label:"家庭社經地位", v:0.21, text:"+.21", tip:"家庭社經地位越高，越常把 AI 當學習幫手" },
-             { label:"學生本人的社經地位", v:-0.24, text:"−.24", tip:"學生本人的社經地位越高，反而越少這樣用" } ],
-      note:"數字是統計模型裡的關聯強度（−1 到 1）。往右：越高越常這樣用；往左：越高反而越少。", src:"Zhang et al. 2024，轉引自 Manganello et al. 2026：6" },
+    chart:{ type:"bars", title:"每週至少用一次 AI 的學生比例，依用途分（OECD 國家平均）", scale:[0,50], unit:"%",
+      rows:[ { label:"幫助自己學習", v:45, text:"45%" },
+             { label:"做新主題的初步研究", v:31, text:"31%" },
+             { label:"摘要要讀的文章", v:30, text:"30%" },
+             { label:"起草寫作作業", v:29, text:"29%", hi:true } ],
+      read:"深色長條就是標題說的「起草作業」，也就是讓 AI 先寫出初稿。", src:"OECD 2026: 237" },
     ask:"你上一次請 AI 幫忙寫作業時，是讓它替你想，還是陪你想？",
     design:"有沒有人教過你，決定了你看得到哪些用法；付費版讓作業更快，但不會讓理解更深。",
     roleNote:{
@@ -559,7 +575,7 @@ const ROUNDS = [
     }
   },
   { title:"第二關：數學卡關",
-    big:{ num:"76 萬", unit:"名 15 歲學生", desc:"幾乎每天用 AI 學習的人，科學成績反而比不用的人低" },
+    big:{ headline:"幾乎每天用 AI 學習的學生，科學成績反而比不用的人低" },
     scene:function(){ return '<p class="scene">晚上寫數學講義，卡在一題條件機率，明天就要交。</p>'; },
     flavor:{ zhihan:"打工到九點才回家，眼睛已經很累了。", yuxiang:"哄弟妹睡覺之後，已經快十一點了。",
       boan:"晚上家裡的網路又斷了一次，你只能等它恢復。", yutong:"講義上的題目很長，你讀了三遍才看懂題意。" },
@@ -578,14 +594,17 @@ const ROUNDS = [
         hook:"你靠自己算出來了，代價是一整個晚上。",
         text:"你算了很久，最後算出來了，只是花掉了整個晚上。" }
     ]; },
-    fact:'PISA 調查了全球約 76 萬名 15 歲學生：幾乎每天用 AI 學習的人，科學成績反而比不用的人低；每週使用的人，則和不用的人差不多。報告也提醒，這是相關，不一定代表是 AI 造成的（OECD 2026: 239）。',
+    fact:'PISA 調查了全球約 76 萬名 15 歲學生。約每 5 個學生就有 1 個幾乎每天用 AI 學習，但他們的科學成績反而比不用的人低；每週用一兩次的人，則和不用的人差不多。報告也提醒，這是相關，不一定代表是 AI 造成的（OECD 2026: 238-239）。',
     voices:[ { q:"它讓找答案變得太容易，會讓人失去自己思考、批判的能力。", who:"一位挪威女大學生對 AI 的擔憂", src:"Møgelvang et al. 2024，轉引自 Manganello et al. 2026：7" },
       { q:"它幾秒內就給出答案，大大縮短了我們的時間，也減少了我們的努力。", who:"一位中國研究生描述剛開始用 AI 的感受", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
       { q:"AI 可以先當我學習時的『聆聽者』，接收我的想法和架構，幫我整理思緒；之後再把它當成『知識延伸者』。", who:"一位中國研究生說明自己怎麼和 AI 分工", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5-6" } ],
-    chart:{ title:"OECD 國家平均：15 歲學生用 AI 做課業嗎？", scale:[0,100],
-      rows:[ { label:"會用 AI 做課業", v:86, text:"86%" },
-             { label:"從未或幾乎從未", v:14, text:"14%" } ],
-      note:"「會用」指在 PISA 問到的幾種課業用途裡，至少有一種用過。", src:"OECD 2026: 238" },
+    chart:{ type:"bars", title:"多常用 AI「幫助自己學習」？（OECD 國家平均）", scale:[0,30], unit:"%",
+      rows:[ { label:"每天或幾乎每天", v:19, text:"19%", hi:true, tag:"成績比不用的人低", tagCls:"low" },
+             { label:"每週一兩次", v:26, text:"26%", tag:"和不用的人差不多", tagCls:"same" },
+             { label:"每月一兩次", v:21, text:"21%", tag:"成績比不用的人低", tagCls:"low" },
+             { label:"每年一兩次", v:13, text:"13%", tag:"成績比不用的人低", tagCls:"low" },
+             { label:"從未或幾乎從未", v:21, text:"21%", tag:"比較的基準", tagCls:"base" } ],
+      read:"長條是每種使用頻率的學生比例；右邊的標籤是這群學生的科學成績，和不用 AI 的學生相比的結果（已考慮家庭社經背景）。", src:"OECD 2026: 237-239" },
     ask:"如果明天的考試不能用 AI，你今晚的選擇會不一樣嗎？",
     design:"上一關的練習會解鎖新的用法；AI 認知低的角色，要停下來想，才會看到它。",
     roleNote:{
@@ -599,7 +618,7 @@ const ROUNDS = [
     }
   },
   { title:"第三關：AI 說錯了嗎？",
-    big:{ num:"4 / 10", unit:"弱勢學生是科學低成就", desc:"優勢學生大約只有 1 / 10" },
+    big:{ headline:"弱勢學生科學低成就的比例，是優勢學生的 3 倍" },
     scene:function(){
       S.noticedR3 = (R.know + S.judge) >= 4;
       return '<p class="scene">報告還缺一段「青年從幾歲開始可以行使哪些權利」。你請 AI 整理，它回答：</p>'+
@@ -627,10 +646,9 @@ const ROUNDS = [
     fact:'在一項研究中，90% 的學生認為，要判斷 AI 說得對不對，得先有紮實的學科知識（Chiu 2024，轉引自 Park 2025：9）。這些知識本身就分布不均：PISA 發現，每 10 個弱勢學生中，將近 4 個是科學低成就，優勢學生只有大約 1 個（OECD 2026: 69）。',
     voices:[ { q:"它給了我錯誤的答案，讓我開始懷疑它的可信度。", who:"一位中國研究生在測試 AI 之後", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
       { q:"AI 讓人得到靈感、想法、指引和建議，但它也不是可以盲目信任的東西。", who:"一位挪威女大學生談自己怎麼看待 AI", src:"Møgelvang et al. 2024，轉引自 Manganello et al. 2026：6" } ],
-    chart:{ title:"科學低成就的學生比例（OECD 國家平均）", scale:[0,100],
-      rows:[ { label:"弱勢學生", v:37, text:"37%" },
-             { label:"優勢學生", v:12, text:"12%" } ],
-      note:"弱勢、優勢依學生的社經地位區分。", src:"OECD 2026: 69" },
+    chart:{ type:"dots", title:"每 100 個學生中，有幾個是科學低成就？（OECD 國家平均）",
+      groups:[ { label:"弱勢學生", v:37 }, { label:"優勢學生", v:12 } ],
+      read:"一個點代表 1 個學生，紅點是科學低成就的學生。弱勢、優勢依學生的社經地位區分。", src:"OECD 2026: 69" },
     ask:"你上一次發現 AI 說錯，是什麼時候？你是怎麼發現的？",
     design:"學科基礎加上 AI 認知越高，越容易察覺錯誤。",
     roleNote:{
@@ -643,7 +661,7 @@ const ROUNDS = [
     }
   },
   { title:"第四關：寫一段好的提示", builder:true,
-    big:{ num:"53–78%", unit:"的回答品質差異", desc:"來自提示寫得好不好" },
+    big:{ headline:"AI 回答得好不好，一半以上取決於提示寫得好不好" },
     scene:function(){ return '<p class="scene">明天生物小考考「細胞分裂」，你想請 AI 幫你複習。選擇要放進提示裡的內容，右邊的手機會即時組出你的提示。</p>'; },
     flavor:{ zhihan:"只能在打工的休息時間，用手機快速打一段話。", boan:"手機訊號只有一格，送出提示後要等很久。" },
     roleNote:{
@@ -652,10 +670,10 @@ const ROUNDS = [
     fact:'一項實驗發現，提示寫得好不好，可以解釋 AI 回答品質一半以上的差異（53% 到 78%）。但學生多半覺得寫提示很簡單，難度自評平均只有 1.91 分（0 到 5 分），實際表現卻只有中等（Knoth et al. 2024）。',
     voices:[ { q:"多練習之後，我發現指令是得到理想結果與答案的關鍵。", who:"一位中國研究生談自己怎麼學會用 AI", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
       { q:"老師說要用 Google 帳號註冊免費版的 AI。我想不起來怎麼註冊，也忘了密碼，所以就假裝在練習。但老師沒有放棄。", who:"一位以色列的第一代大學生、少數族群學生", src:"Hadar Shoval 2025，轉引自 Manganello et al. 2026：7" } ],
-    chart:{ title:"提示寫得好不好，能解釋多少回答品質的差異？", scale:[0,100],
-      rows:[ { label:"任務一：旅遊規劃", v:53, text:"53%" },
-             { label:"任務二：科學專案規劃", v:78, text:"78%" } ],
-      note:"剩下的差異來自其他因素。", src:"Knoth et al. 2024" },
+    chart:{ type:"split", title:"AI 回答品質的差異，有多少來自提示寫得好不好？",
+      series:["提示品質能解釋的部分","其他因素"],
+      rows:[ { label:"任務一：旅遊規劃", v:53 }, { label:"任務二：科學專案規劃", v:78 } ],
+      read:"一整條代表 AI 回答品質的全部差異；深色部分是「提示寫得好不好」可以解釋的比例。", src:"Knoth et al. 2024" },
     ask:"你平常寫給 AI 的提示，通常有幾句話？有人教過你怎麼寫嗎？",
     design:"被鎖住的寫法，代表還沒有人教過你，或你還沒練過。",
     extra:function(){
@@ -664,7 +682,7 @@ const ROUNDS = [
     }
   },
   { title:"第五關：簡報封面",
-    big:{ num:"26", unit:"名弱勢社區的學生", desc:"用自己被歧視的經驗，看出 AI 圖像的偏誤" },
+    big:{ headline:"不輕易相信 AI 的學生，從 AI 得到的收穫反而更多" },
     scene:function(){
       S.noticedR5 = R.resist || S.judge>=4;
       let v;
@@ -697,16 +715,15 @@ const ROUNDS = [
             return { eff:{pos:{resourceful:1}}, hook:"你很仔細，但沒有意識到偏誤的時候，再仔細也找不到它。", text:"你檢查了錯字和排版，都沒問題。沒有意識到偏誤時，仔細檢查也找不到它。" }; } }
       ];
     },
-    fact:'一項研究中，26 名來自弱勢社區的學生，能用自己被歧視的經驗，看出 AI 圖像裡的性別與種族偏誤。研究者稱之為「'+term("抵抗資本")+'」，但也提醒，看得出問題，不代表有力量改變 AI（Manganello et al. 2026: 4）。',
+    fact:'一項針對 947 名美國大學生的研究發現，同樣把 AI 當學習幫手，不太信任 AI 的學生，學業自信和創造力提高得更明顯（Zhang et al. 2024，轉引自 Manganello et al. 2026：7）。研究者認為，健康的懷疑能讓學生更能掌握自己的學習（Manganello et al. 2026: 7）。另一項研究中，26 名來自弱勢社區的學生，用自己被歧視的經驗，看出 AI 圖像裡的性別與種族偏誤。研究者稱之為「'+term("抵抗資本")+'」，但也提醒，看得出問題，不代表有力量改變 AI（Manganello et al. 2026: 4）。',
     voices:[ { q:"很難讓它看起來像我。", who:"一位美國非裔學生用 AI 生成自畫像之後", src:"Cao et al. 2025，轉引自 Manganello et al. 2026：4" },
       { q:"至少在美國歷史上，大多數有名的人都是白人男性。", who:"一位美國學生解釋 AI 圖像為什麼偏向某些人", src:"Cao et al. 2025，轉引自 Manganello et al. 2026：4" } ],
-    chart:{ title:"不太信任 AI 的學生，收穫反而更多", scale:[0,1],
-      series:["不太信任 AI","很信任 AI"],
-      rows:[ { group:"學業自信", label:"不太信任 AI", s:0, v:0.60, text:".60" },
-             { group:"學業自信", label:"很信任 AI", s:1, v:0.36, text:".36" },
-             { group:"創造力", label:"不太信任 AI", s:0, v:0.65, text:".65" },
-             { group:"創造力", label:"很信任 AI", s:1, v:0.46, text:".46" } ],
-      note:"數字是「把 AI 當學習幫手」和學業自信、創造力的關聯強度（0 到 1）。研究者認為，健康的懷疑讓學生更能掌握自己的學習。", src:"Zhang et al. 2024，轉引自 Manganello et al. 2026：7" },
+    chart:{ type:"bars", title:"同樣把 AI 當學習幫手，誰的收穫比較多？", scale:[0,1],
+      rows:[ { group:"學業自信", label:"不太信任 AI", v:0.60, text:".60", hi:true },
+             { group:"學業自信", label:"很信任 AI", v:0.36, text:".36" },
+             { group:"創造力", label:"不太信任 AI", v:0.65, text:".65", hi:true },
+             { group:"創造力", label:"很信任 AI", v:0.46, text:".46" } ],
+      read:"數字是關聯強度：0 代表沒有關聯，越接近 1，代表把 AI 當學習幫手時，學業自信或創造力跟著提高得越明顯。", src:"Zhang et al. 2024，轉引自 Manganello et al. 2026：7" },
     ask:"你用 AI 生成的圖片或例子裡，出現過和你一樣的人嗎？",
     design:"對刻板印象敏感的角色，不需要任何課程就能察覺偏誤。",
     extra:function(c){
@@ -873,26 +890,37 @@ function pickVoice(rd){
 }
 
 function chartHtml(ch){
-  const lo = ch.scale[0], hi = ch.scale[1], span = hi - lo;
-  const zero = (0 - lo) / span * 100;
-  let group = "", rows = "";
-  ch.rows.forEach(function(r){
-    if (r.group && r.group !== group) { group = r.group; rows += '<div class="ch-group">'+group+'</div>'; }
-    const w = Math.abs(r.v) / span * 100;
-    const left = r.v < 0 ? zero - w : zero;
-    const cls = ch.type === "div" ? (r.v < 0 ? "neg" : "pos") : (r.s ? "s1" : "s0");
-    const tip = r.tip || ((r.group ? r.group + "・" : "") + r.label + "：" + r.text);
-    rows += '<div class="ch-row" title="'+tip+'"><span class="ch-label">'+r.label+'</span>'+
-      '<span class="ch-track">'+(ch.type === "div" ? '<i class="ch-zero" style="left:'+zero+'%"></i>' : '')+
-      '<i class="ch-bar '+cls+(r.v < 0 ? ' left' : '')+'" style="left:'+left+'%;width:'+w+'%"></i></span>'+
-      '<span class="ch-val">'+r.text+'</span></div>';
-  });
-  const legend = ch.series ? '<div class="ch-legend">'+ch.series.map(function(s, i){ return '<span><i class="s'+i+'"></i>'+s+'</span>'; }).join("")+'</div>' : '';
-  const aria = ch.title + (/[？。]$/.test(ch.title) ? "" : "。") + ch.rows.map(function(r){ return (r.group ? r.group + "，" : "") + r.label + " " + r.text; }).join("；");
-  return '<figure class="chart" role="img" aria-label="'+aria+'"><figcaption>'+ch.title+'</figcaption>'+legend+
-    '<div class="ch-rows'+(ch.type === "div" ? ' div' : '')+'">'+rows+
-    (ch.type === "div" ? '<div class="ch-row ch-axisrow"><span></span><span class="ch-axis"><span>越高越少</span><span>0</span><span>越高越多</span></span><span></span></div>' : '')+'</div>'+
-    '<p class="ch-note">'+ch.note+'<br>資料來源：'+ch.src+'</p></figure>';
+  let body = "", aria = "";
+  if (ch.type === "dots") {
+    // 每個群組 100 個點，一點代表 1 個學生
+    body = '<div class="ch-dots">'+ch.groups.map(function(g){
+      let dots = "";
+      for (let i = 0; i < 100; i++) dots += '<i'+(i < g.v ? ' class="on"' : '')+'></i>';
+      return '<div class="ch-dotgroup" title="'+g.label+'：每 100 人中有 '+g.v+' 人"><div class="ch-dothead"><span class="ch-label">'+g.label+'</span><b class="ch-val">'+g.v+' 人</b></div><div class="ch-grid">'+dots+'</div></div>';
+    }).join("")+'</div>';
+    aria = ch.groups.map(function(g){ return g.label+"每 100 人中有 "+g.v+" 人"; }).join("；");
+  } else if (ch.type === "split") {
+    body = '<div class="ch-legend"><span><i class="hi"></i>'+ch.series[0]+'</span><span><i class="rest"></i>'+ch.series[1]+'</span></div>'+
+      '<div class="ch-rows">'+ch.rows.map(function(r){
+        return '<div class="ch-row" title="'+r.label+'：提示品質可解釋 '+r.v+'%，其他因素 '+(100 - r.v)+'%"><span class="ch-label">'+r.label+'</span>'+
+          '<span class="ch-track split"><i class="ch-bar hi" style="width:'+r.v+'%"></i><i class="ch-rest" style="width:'+(100 - r.v)+'%"></i></span>'+
+          '<span class="ch-val">'+r.v+'%</span></div>';
+      }).join("")+'</div>';
+    aria = ch.rows.map(function(r){ return r.label+"，提示品質可解釋 "+r.v+"%"; }).join("；");
+  } else {
+    const span = ch.scale[1] - ch.scale[0];
+    let group = "";
+    body = '<div class="ch-rows'+(ch.rows.some(function(r){ return r.tag; }) ? ' tagged' : '')+'">'+ch.rows.map(function(r){
+      let h = "";
+      if (r.group && r.group !== group) { group = r.group; h += '<div class="ch-group">'+group+'</div>'; }
+      return h+'<div class="ch-row'+(r.hi ? ' is-hi' : '')+'" title="'+(r.group ? r.group+"・" : "")+r.label+"："+r.text+(r.tag ? "（"+r.tag+"）" : "")+'"><span class="ch-label">'+r.label+'</span>'+
+        '<span class="ch-track"><i class="ch-bar'+(r.hi ? ' hi' : '')+'" style="width:'+(r.v / span * 100)+'%"></i></span>'+
+        '<span class="ch-val">'+r.text+'</span>'+(r.tag ? '<span class="ch-tag '+(r.tagCls || "")+'">'+r.tag+'</span>' : '')+'</div>';
+    }).join("")+'</div>';
+    aria = ch.rows.map(function(r){ return (r.group ? r.group+"，" : "")+r.label+" "+r.text+(r.tag ? "，"+r.tag : ""); }).join("；");
+  }
+  return '<figure class="chart" role="img" aria-label="'+ch.title+" "+aria+'"><figcaption>'+ch.title+'</figcaption>'+body+
+    '<p class="ch-read"><b>怎麼看：</b>'+ch.read+'</p><p class="ch-src">資料來源：'+ch.src+'</p></figure>';
 }
 
 function renderTalk(rd, c){
@@ -903,9 +931,8 @@ function renderTalk(rd, c){
   return '<div class="talk">'+
     '<div class="hook-card"><span class="label you">你的這一步</span>'+(hook?'<p class="hook">'+hook+'</p>':'')+
       (extra?'<p class="extra">'+extra+'</p>':'')+(note?'<p class="extra">'+note+'</p>':'')+'</div>'+
-    '<div class="data-card"><div class="bignum">'+rd.big.num+'<small>'+rd.big.unit+'</small></div>'+
-      '<div><span class="label world">真實世界裡</span><p><b>'+rd.big.desc+'</b></p><p class="small">'+rd.fact+'</p></div>'+
-      (rd.chart ? chartHtml(rd.chart) : '')+'</div>'+
+    '<div class="data-card"><span class="label world">真實世界裡</span><p class="headline">'+rd.big.headline+'</p>'+
+      (rd.chart ? chartHtml(rd.chart) : '')+'<p class="small">'+rd.fact+'</p></div>'+
     '<div class="quote-card"><span class="label voice">研究中的學生</span><q>'+v.q+'</q><cite>'+v.who+'（'+v.src+'）</cite></div>'+
     '<div class="sticky"><b>想一想</b>'+rd.ask+'</div>'+
     (rd.design?'<p class="design">遊戲設計：'+rd.design+'</p>':'')+

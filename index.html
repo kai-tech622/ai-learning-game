@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同一個 AI，不同的起點</title>
+<style>
+:root{
+  --night:#1c2140; --night2:#2d2a52; --paper:#fffaf0; --paper2:#fff3dc; --ink:#23202e; --muted:#6b6478;
+  --line:#e7dcc6; --accent:#3a7ca5; --gold:#e0a526; --good:#2e8b57; --bad:#c2452d; --lock:#9c97a6;
+  --grade:#e08a1e; --und:#3a7ca5; --judge:#7b57c2; --prac:#3f9a5f; --time:#c98a2b;
+  --shadow:0 6px 0 rgba(0,0,0,.25), 0 12px 28px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC","Heiti TC",system-ui,sans-serif;line-height:1.7;font-size:16px;color:var(--ink);
+  background:radial-gradient(circle at 20% 10%,#3b3670 0,transparent 40%),radial-gradient(circle at 85% 80%,#23426b 0,transparent 45%),linear-gradient(160deg,var(--night),var(--night2));background-attachment:fixed;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 72px}
+h1,h2,h3{line-height:1.35}
+p{margin:.5em 0}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.light{color:#efeaff}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:700;border:none;border-radius:14px;padding:12px 22px;cursor:pointer;color:#fff;background:linear-gradient(#f2b43a,#d98a12);box-shadow:0 5px 0 #9c5f08,0 10px 20px rgba(0,0,0,.25);transition:transform .08s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #9c5f08}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.btn.big{font-size:1.2rem;padding:16px 34px}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.3)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+
+/* panels */
+.panel{background:var(--paper);border-radius:20px;padding:20px;margin:16px 0;box-shadow:var(--shadow);border:3px solid #fff}
+.panel h2{margin:0 0 .5em;font-size:1.25rem}
+
+/* title */
+.title-screen{text-align:center;color:#fff;padding-top:12px}
+.title-art{border-radius:24px;overflow:hidden;box-shadow:var(--shadow);border:4px solid #fff;background:#f7c873}
+.title-art svg{display:block;width:100%;height:auto}
+.game-title{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;margin:22px 0 4px;letter-spacing:.06em;text-shadow:0 4px 0 #0e1030,0 0 24px rgba(255,200,100,.35)}
+.game-sub{font-size:1.05rem;color:#dcd6f5;max-width:640px;margin:0 auto}
+.notice{background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.35);color:#e6e1fa;border-radius:14px;padding:12px 16px;font-size:.88rem;max-width:680px;margin:18px auto 0;text-align:left}
+
+/* role select */
+.sec-title{color:#fff;font-size:1.5rem;margin:8px 0 4px;text-shadow:0 3px 0 #0e1030}
+.role-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+@media (max-width:760px){.role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.role-grid{grid-template-columns:1fr}}
+.role{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;font:inherit;color:var(--ink);background:var(--paper);border:3px solid #fff;border-radius:20px;padding:14px 12px 12px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.25);transition:transform .12s}
+.role:hover,.role:focus-visible{transform:translateY(-4px);outline:none}
+.role.sel{border-color:var(--gold);box-shadow:0 0 0 4px rgba(224,165,38,.45),0 6px 0 rgba(0,0,0,.25)}
+.role .pt{width:86px;height:86px}
+.role-name{font-weight:900;font-size:1.2rem;margin-top:4px}
+.role-tag{font-size:.85rem;color:var(--muted);min-height:2.8em}
+.played{position:absolute;top:10px;right:10px;font-size:.72rem;background:var(--good);color:#fff;border-radius:999px;padding:1px 8px}
+.statbars{width:100%;margin-top:8px;display:grid;gap:5px}
+.sb{display:grid;grid-template-columns:4.6em 1fr;align-items:center;gap:8px;font-size:.78rem;text-align:left}
+.sb-track{height:9px;background:#eee3cf;border-radius:999px;overflow:hidden}
+.sb-track span{display:block;height:100%;border-radius:999px}
+.badges{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:8px}
+.badge{font-size:.74rem;border-radius:999px;padding:1px 9px;background:#efe6d4;color:#5b5163;white-space:nowrap}
+.badge.gold{background:#fbe7b5;color:#8a5a00}
+.badge.pink{background:#f6dde6;color:#8f3f5e}
+.detail{display:flex;gap:18px;align-items:center}
+.detail .pt{width:120px;height:120px;flex:none}
+@media (max-width:560px){.detail{flex-direction:column;text-align:center}}
+
+/* hud */
+.hud{position:sticky;top:8px;z-index:6;background:rgba(20,22,48,.92);backdrop-filter:blur(6px);border:2px solid rgba(255,255,255,.18);border-radius:18px;padding:8px 12px;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.hud .pt{width:42px;height:42px}
+.hud-who{display:flex;align-items:center;gap:8px;font-weight:900}
+.hud-time{display:flex;align-items:center;gap:2px;flex-wrap:wrap;max-width:260px}
+.hg{width:15px;height:18px}
+.hg.off{opacity:.25}
+.hud-stats{display:flex;gap:8px;flex-wrap:wrap}
+.st{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);border-radius:999px;padding:2px 10px 2px 6px;font-size:.85rem}
+.st svg{width:18px;height:18px}
+.st b{font-size:1rem}
+.st.bump{animation:bump .6s ease}
+.stl{font-style:normal}
+@media (max-width:560px){.hud{position:relative;top:0;gap:6px 10px}.stl{display:none}.hud .pt{width:34px;height:34px}.hg{width:12px;height:15px}}
+.levels{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:.8rem}
+.lv{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5)}
+.lv.done{background:var(--gold);border-color:var(--gold)}
+.lv.now{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+
+/* stage */
+.stage{position:relative;margin-top:14px;border-radius:22px;overflow:hidden;border:4px solid #fff;box-shadow:var(--shadow);background:#222}
+.stage svg.bg{display:block;width:100%;height:210px}
+@media (max-width:560px){.stage svg.bg{height:150px}}
+.stage-title{position:absolute;left:14px;top:12px;background:rgba(20,22,48,.85);color:#fff;border-radius:12px;padding:4px 14px;font-weight:900;font-size:.95rem;border:2px solid rgba(255,255,255,.4)}
+.stage-title small{color:var(--gold);margin-right:6px;font-weight:900}
+.stage .pt.hero{position:absolute;right:14px;bottom:-6px;width:118px;height:118px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+@media (max-width:560px){.stage .pt.hero{width:86px;height:86px}}
+
+/* dialog */
+.dialog{position:relative;background:var(--paper);border:3px solid #fff;border-radius:20px;padding:16px 18px 14px;margin-top:-4px;box-shadow:var(--shadow)}
+.speaker{display:inline-block;position:absolute;top:-16px;left:18px;background:var(--accent);color:#fff;font-weight:900;border-radius:10px;padding:2px 14px;font-size:.9rem;border:2px solid #fff}
+.dialog .scene{font-size:1.05rem;margin-top:8px}
+.flavor{display:flex;gap:8px;align-items:flex-start;color:#7a5418;background:var(--paper2);border-radius:12px;padding:8px 12px;margin:10px 0;font-size:.95rem}
+.ai-say{position:relative;display:flex;gap:10px;align-items:flex-start;background:#e9f3fa;border:2px solid #bfdcee;border-radius:16px;padding:10px 14px;margin:12px 0}
+.ai-say::before{content:"";flex:none;width:34px;height:34px;border-radius:10px;background:#2f7fb0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect x='8' y='10' width='18' height='15' rx='5' fill='%23fff'/%3E%3Ccircle cx='13.5' cy='17' r='2' fill='%232f7fb0'/%3E%3Ccircle cx='20.5' cy='17' r='2' fill='%232f7fb0'/%3E%3Crect x='16' y='5' width='2' height='5' fill='%23fff'/%3E%3Ccircle cx='17' cy='5' r='2' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat}
+.ai-say b{color:#2f7fb0}
+.inner-voice{position:relative;background:#f1ecfb;color:#4f3d80;border-radius:20px;padding:9px 16px;margin:12px 0 4px 26px;font-size:.97rem}
+.inner-voice::before{content:"";position:absolute;left:-18px;top:14px;width:12px;height:12px;border-radius:50%;background:#f1ecfb}
+.inner-voice::after{content:"";position:absolute;left:-28px;top:26px;width:7px;height:7px;border-radius:50%;background:#f1ecfb}
+
+/* choices */
+.ask-title{color:#fff;font-weight:900;margin:20px 0 8px;font-size:1.1rem;text-shadow:0 2px 0 #0e1030}
+.opts{display:grid;gap:12px}
+.opt{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;text-align:left;font:inherit;color:var(--ink);background:var(--paper);border:3px solid #fff;border-radius:18px;padding:12px 14px;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.28);transition:transform .1s, box-shadow .1s;animation:rise .4s ease both}
+.opt:nth-child(2){animation-delay:.05s}.opt:nth-child(3){animation-delay:.1s}.opt:nth-child(4){animation-delay:.15s}.opt:nth-child(5){animation-delay:.2s}.opt:nth-child(6){animation-delay:.25s}
+.opt:hover:not([disabled]),.opt:focus-visible{transform:translateY(-3px);box-shadow:0 8px 0 rgba(0,0,0,.28);outline:none;border-color:var(--gold)}
+.opt:active:not([disabled]){transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
+.opt[disabled]{cursor:not-allowed;background:#e9e5ee;color:var(--lock);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.letter{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-weight:900;color:#fff;background:var(--accent);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.opt[disabled] .letter{background:var(--lock)}
+.opt-label{font-weight:700}
+.opt .why{display:block;font-size:.83rem;font-weight:400;color:var(--muted);margin-top:2px}
+.opt[disabled] .why{color:#8a8594}
+.cost{display:flex;align-items:center;gap:1px;white-space:nowrap;font-size:.8rem;color:var(--time);font-weight:700}
+.cost .hg{width:13px;height:16px}
+.opt[disabled] .cost{color:var(--lock)}
+.tag-premium{display:inline-block;margin-left:6px;font-size:.72rem;background:linear-gradient(#f7d77c,#e0a526);color:#5a3b00;border-radius:999px;padding:0 8px;vertical-align:middle}
+.lockic{width:16px;height:16px;vertical-align:-3px;margin-right:3px}
+.opt.reveal{background:#fff7e6;border-style:dashed;border-color:#e0b35a}
+.opt.reveal .letter{background:#e0a526}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.builder{grid-template-columns:1fr}}
+.comp{position:relative;display:flex;gap:10px;align-items:flex-start;border:3px solid #fff;border-radius:16px;padding:10px 12px;margin-bottom:10px;background:var(--paper);cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.comp input{position:absolute;opacity:0;pointer-events:none}
+.comp .tick{flex:none;width:24px;height:24px;border-radius:8px;border:3px solid var(--accent);display:grid;place-items:center;margin-top:2px;color:#fff;font-weight:900}
+.comp.on{border-color:var(--gold);background:#fff4d9}
+.comp.on .tick{background:var(--accent)}
+.comp.locked{background:#e9e5ee;color:var(--lock);cursor:not-allowed}
+.comp.locked .tick{border-color:var(--lock)}
+.comp .why{display:block;font-size:.82rem;color:var(--muted)}
+.comp:focus-within{outline:3px solid #fff;outline-offset:2px}
+.phone{background:#141a2e;border:4px solid #fff;border-radius:26px;padding:16px 14px;box-shadow:var(--shadow);color:#fff}
+.phone-top{display:flex;justify-content:space-between;font-size:.75rem;color:#9fb2c9;margin-bottom:10px}
+.bubble-me{background:#3a7ca5;border-radius:16px 16px 4px 16px;padding:10px 12px;margin-left:18px;font-size:.93rem;min-height:3em}
+.pcost{font-size:.85rem;color:#e6d6b0;margin:10px 0}
+
+/* outcome */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-weight:900;border-radius:999px;padding:4px 12px;font-size:.95rem;animation:pop .45s cubic-bezier(.2,1.6,.4,1) both}
+.chip svg{width:18px;height:18px}
+.chip.up{background:#dff3e6;color:var(--good)}
+.chip.down{background:#fbe2dc;color:var(--bad)}
+.chip:nth-child(2){animation-delay:.08s}.chip:nth-child(3){animation-delay:.16s}.chip:nth-child(4){animation-delay:.24s}.chip:nth-child(5){animation-delay:.32s}
+.talk{display:grid;gap:12px;margin-top:16px}
+.hook-card{background:var(--paper);border-radius:18px;padding:14px 18px;border:3px solid #fff;box-shadow:var(--shadow);animation:rise .4s ease both .1s}
+.label{display:inline-block;font-size:.75rem;font-weight:900;letter-spacing:.08em;border-radius:8px;padding:1px 10px;margin-bottom:6px}
+.label.you{background:#e3eef6;color:var(--accent)}
+.label.world{background:#fbe7b5;color:#8a5a00}
+.label.voice{background:#f1ecfb;color:#5b3ea1}
+.hook{font-weight:900;font-size:1.05rem;margin:0}
+.extra{background:var(--paper2);border-radius:12px;padding:8px 12px;color:#7a5418;margin:10px 0 0;font-size:.95rem}
+.data-card{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:linear-gradient(135deg,#fff8e4,#ffeec7);border-radius:18px;padding:16px 18px;border:3px solid #fff;box-shadow:var(--shadow);animation:rise .4s ease both .2s}
+@media (max-width:560px){.data-card{grid-template-columns:1fr}}
+.bignum{font-size:2.6rem;font-weight:900;color:#c9780a;line-height:1;white-space:nowrap;text-shadow:0 3px 0 rgba(0,0,0,.08)}
+.bignum small{display:block;font-size:.8rem;color:#8a5a00;font-weight:700;margin-top:6px;white-space:normal;max-width:12em}
+.data-card p{margin:.2em 0}
+.chart{grid-column:1/-1;margin:4px 0 0;background:rgba(255,255,255,.75);border-radius:14px;padding:12px 14px 10px}
+.chart figcaption{font-weight:800;font-size:.95rem;margin-bottom:8px}
+.ch-legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted);margin:-2px 0 6px}
+.ch-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ch-rows{display:grid;gap:6px}
+.ch-group{font-size:.78rem;font-weight:700;color:var(--muted);margin-top:4px}
+.ch-row{display:grid;grid-template-columns:minmax(6.5em,9.5em) 1fr 3em;align-items:center;gap:10px;font-size:.88rem;padding:2px 0;border-radius:6px}
+.ch-row:hover{background:rgba(47,116,192,.08)}
+.ch-label{color:var(--ink)}
+.ch-val{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.ch-track{position:relative;height:16px;border-left:1px solid #d9cdb4}
+.ch-rows.div .ch-track{border-left:0}
+.ch-zero{position:absolute;top:-4px;bottom:-4px;width:1px;background:#9c97a6}
+.ch-bar{position:absolute;top:0;height:100%;border-radius:0 4px 4px 0;transform-origin:left;animation:grow .7s cubic-bezier(.2,.8,.2,1) both .45s}
+.ch-bar.left{border-radius:4px 0 0 4px;transform-origin:right}
+.ch-bar.s0,.ch-legend .s0,.ch-bar.pos{background:#2f74c0}
+.ch-bar.s1,.ch-legend .s1,.ch-bar.neg{background:#c2452d}
+.ch-axisrow:hover{background:none}
+.ch-axis{display:grid;grid-template-columns:1fr auto 1fr;font-size:.72rem;color:var(--muted)}
+.ch-axis span:last-child{text-align:right}
+.ch-note{font-size:.76rem;color:var(--muted);margin:8px 0 0!important;line-height:1.5}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (max-width:560px){.ch-row{grid-template-columns:6.5em 1fr 2.6em;gap:8px;font-size:.82rem}}
+.quote-card{position:relative;background:#fff;border-radius:18px;padding:16px 18px 14px 64px;border:3px solid #fff;box-shadow:var(--shadow);animation:rise .4s ease both .3s}
+.quote-card::before{content:"「";position:absolute;left:14px;top:2px;font-size:3.2rem;color:#c7b8ea;font-weight:900;line-height:1}
+.quote-card q{quotes:none;font-size:1.12rem;font-weight:700;display:block}
+.quote-card cite{display:block;font-style:normal;font-size:.8rem;color:var(--muted);margin-top:6px}
+.sticky{background:#fff27a;color:#4a4200;border-radius:4px 4px 18px 4px;padding:12px 16px;transform:rotate(-1deg);box-shadow:0 6px 14px rgba(0,0,0,.25);animation:rise .4s ease both .4s}
+.sticky b{display:block;font-size:.8rem;letter-spacing:.1em}
+.design{color:#bdb6d8;font-size:.82rem;margin:0 4px}
+
+/* end */
+.report{background:var(--paper);border-radius:22px;border:4px solid #fff;box-shadow:var(--shadow);padding:22px;position:relative;overflow:hidden}
+.report::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(transparent 0 31px,#f1e6cf 31px 32px);opacity:.6;pointer-events:none}
+.report > *{position:relative}
+.report-head{display:flex;align-items:center;gap:14px;border-bottom:3px double #d9c9a6;padding-bottom:12px}
+.report-head .pt{width:76px;height:76px;flex:none}
+.report-head h1{margin:0;font-size:1.5rem}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.score{background:#fff;border-radius:16px;padding:12px 14px;border:2px solid var(--line);text-align:center}
+.score .n{font-size:2.6rem;font-weight:900;line-height:1.1}
+.score .t{font-size:.85rem;color:var(--muted)}
+.stamp{position:absolute;right:18px;top:18px;transform:rotate(-12deg);border:4px solid;border-radius:14px;padding:4px 14px;font-weight:900;font-size:1.5rem;letter-spacing:.1em;background:rgba(255,255,255,.7);animation:stamp .5s cubic-bezier(.2,1.6,.4,1) both .3s}
+@media (max-width:560px){.stamp{position:static;display:inline-block;margin-top:10px}}
+.achv{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.ach{display:flex;gap:10px;align-items:center;background:#fff;border-radius:14px;padding:8px 10px;border:2px solid var(--line)}
+.ach svg{width:38px;height:38px;flex:none}
+.ach.off{opacity:.45;filter:grayscale(1)}
+.ach b{display:block;font-size:.9rem}
+.ach span{font-size:.75rem;color:var(--muted)}
+.bars{display:grid;gap:8px}
+.bar-row{display:grid;grid-template-columns:4.5em 1fr 2em;align-items:center;gap:10px;font-size:.9rem}
+.bar{height:12px;background:#ece3d0;border-radius:999px;overflow:hidden}
+.bar > span{display:block;height:100%;border-radius:999px}
+ul.clean{padding-left:1.2em;margin:.4em 0}
+ul.clean li{margin:.35em 0}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:600px}
+th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;white-space:nowrap}
+th{background:#f6ecd6}
+td .pt{width:28px;height:28px;vertical-align:middle;margin-right:4px}
+.refs{font-size:.82rem;color:var(--muted)}
+.refs p{padding-left:2em;text-indent:-2em}
+
+/* rules */
+.overlay{position:fixed;inset:0;z-index:30;background:rgba(10,12,30,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px}
+.overlay[hidden]{display:none!important}
+.modal{background:var(--paper);border:4px solid #fff;border-radius:24px;box-shadow:var(--shadow);width:100%;max-width:780px;max-height:88vh;overflow:auto;padding:22px;animation:rise .3s ease both}
+.modal h2{margin:0 0 4px;font-size:1.4rem}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media (max-width:620px){.rules-grid{grid-template-columns:1fr}}
+.rule{background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px}
+.rule h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:1rem}
+.rule-no{flex:none;width:26px;height:26px;border-radius:9px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:.85rem;font-weight:900}
+.rule p{margin:.25em 0;font-size:.92rem}
+.rule ul{margin:.3em 0;padding-left:1.1em;font-size:.9rem}
+.rule li{margin:.15em 0}
+.ic-inline{display:inline-flex;align-items:center;gap:2px;vertical-align:-3px}
+.ic-inline svg{width:18px;height:18px}
+.ic-dark{background:#23304d;border-radius:8px;padding:1px 6px}
+.help{flex:none;width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.12);color:#fff;font:inherit;font-weight:900;cursor:pointer}
+.help:hover,.help:focus-visible{background:var(--gold);border-color:var(--gold);outline:none}
+.link-btn{background:none;border:none;color:#ffd76a;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:0}
+
+/* glossary */
+.term{border-bottom:2px dotted var(--accent);color:var(--accent);cursor:help;font-weight:700}
+.term:focus-visible{outline:2px solid var(--accent);border-radius:3px}
+.game-sub .term,.light .term{color:#ffd76a;border-bottom-color:#ffd76a}
+#tip{position:fixed;z-index:20;max-width:300px;background:#141a2e;color:#f1f5f7;font-size:.86rem;line-height:1.6;border-radius:12px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.2)}
+
+/* motion */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes bump{0%,100%{transform:scale(1)}40%{transform:scale(1.25)}}
+@keyframes stamp{from{opacity:0;transform:rotate(-12deg) scale(2.2)}to{opacity:1;transform:rotate(-12deg) scale(1)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.stage .pt.hero{animation:bob 3s ease-in-out infinite}
+.screen{animation:rise .35s ease both}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="tip" role="tooltip" hidden></div>
+<div id="rules" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rules-title"></div>
+
+<script>
+"use strict";
+
+const ROLES = [
+  { id:"yiqing", name:"以晴", color:"#2f6f8f", skin:"#f1cfae", hair:"long", tag:"父母都是大學教師的明星高中生",
+    bio:"家中訂閱付費版 AI。父母常和她討論怎麼判斷資訊真假，學校也開了評估 AI 內容的課程。",
+    time:11, know:3, guide:3, paid:true, resist:false },
+  { id:"chengen", name:"承恩", color:"#8a5a2b", skin:"#ecc39d", hair:"side", tag:"家境寬裕、父母工作忙碌的私校生",
+    bio:"家裡幫他買了付費版 AI，但父母很少過問他怎麼用。學校禁止在課堂使用 AI，也沒有人教過他。",
+    time:11, know:2, guide:1, paid:true, resist:false },
+  { id:"yuxiang", name:"宇翔", color:"#3d7f5a", skin:"#f3d4b5", hair:"short", tag:"雙薪家庭的一般公立高中生",
+    bio:"用免費版 AI。晚上要幫忙照顧弟妹。老師偶爾提醒 AI 會出錯，但沒有系統地教過。",
+    time:9, know:2, guide:2, paid:false, resist:false },
+  { id:"zhihan", name:"芷涵", color:"#8f3f5e", skin:"#e9bf98", hair:"pony", tag:"放學後要打工的社區高中生",
+    bio:"和家人共用一支手機，用免費版 AI。課後要打工，複習時間少；學校資源有限，沒有 AI 相關課程。因為家庭背景曾被貼過標籤，她對刻板印象特別敏感。",
+    time:6, know:1, guide:1, paid:false, resist:true },
+  { id:"boan", name:"柏安", color:"#5a7a2e", skin:"#e5b791", hair:"cap", tag:"山區小型高中的學生",
+    bio:"就讀山區的小型高中。學校有電腦教室，但網路常常斷線；老師流動率高，每學期都有新的代課老師，沒有人固定教怎麼用 AI。假日要幫家裡務農。",
+    time:8, know:2, guide:1, paid:false, resist:false, net:true },
+  { id:"yutong", name:"語彤", color:"#7a4fa0", skin:"#f0caa6", hair:"bob", tag:"有閱讀障礙的都市高中生",
+    bio:"雙薪家庭，父母很支持她，常陪她討論功課。她有閱讀障礙，讀長篇文字要花比別人多很多時間，但理解力並不差。學校提供考試延長時間，卻沒有人討論過 AI 能不能當作她的輔具。",
+    time:9, know:2, guide:2, paid:false, resist:false, dys:true }
+];
+
+const TYPES = {
+  receptive:  { name:"接受型", color:"#c2452d", desc:"把 AI 當成快速取得答案的工具，重視效率、少做檢驗。長期下來，批判評估的能力比較難發展。" },
+  resistive:  { name:"抗拒型", color:"#8a5a2b", desc:"傾向不用或質疑 AI。保有批判性，但也錯過了 AI 能提供的學習協助。" },
+  resourceful:{ name:"資源型", color:"#2e8b57", desc:"策略性地運用 AI，同時保有學習的主導權，會反覆調整提示來改善產出。" },
+  reflective: { name:"反思型", color:"#3a7ca5", desc:"把 AI 當作思考夥伴，用來梳理、檢驗自己的想法，結論由自己做出。" }
+};
+
+const TERMS = {
+  "第二層數位落差":"數位落差分為三層：取用機會、使用技能與方式、使用成果。第二層指的是取用機會相近時，使用技能與方式上的差距（van Dijk 2012，轉引自 Khan 2026：748）。",
+  "文化資本":"布迪厄的概念，指家庭傳承的知識、習慣與品味。教育體系會透過看似公平的機制，把它轉換成學業上的成功（Bourdieu and Passeron 1977，轉引自 Manganello et al. 2026：2）。",
+  "自我定位":"學生在與 AI 互動時，把自己放在什麼位置。Manganello 等人歸納出接受型、抗拒型、資源型、反思型四種（Manganello et al. 2026: 5）。",
+  "抵抗資本":"弱勢學生運用自身遭受歧視的經驗，辨識 AI 內容中偏誤的能力（Manganello et al. 2026: 4）。",
+  "提示工程":"撰寫與調整給 AI 的指令，以取得更精準回應的技巧（Park 2025: 8）。",
+  "替代型使用":"讓 AI 代替自己完成思考或作業。研究發現這類使用與學習成果負相關（轉引自 Manganello et al. 2026：6）。",
+  "AI 認知":"對 AI 如何運作、可能在哪裡出錯的正確理解，對應 Park（2025）生成式 AI 素養架構中的「知道與理解」。研究發現，部分中學生把 ChatGPT 等同於 Google（Cheung et al. 2024，轉引自 Park 2025：7）。"
+};
+const JUDGE_LABEL = ["低","中","高"];
+const JUDGE_DESC = ["把 AI 當成比較聰明的 Google","知道 AI 會出錯","了解 AI 如何產生答案"];
+function term(t){ return '<span class="term" tabindex="0" data-term="'+t+'">'+t+'</span>'; }
+
+const MAX_GRADE = 8, MAX_EXAM = 19;
+let R = null, S = null, pick = new Set(), selId = null;
+let plays = [];
+try { plays = JSON.parse(localStorage.getItem("ai-sim-plays") || "[]"); } catch(e) { plays = []; }
+function saveHistory(){ try { localStorage.setItem("ai-sim-plays", JSON.stringify(plays)); } catch(e) {} }
+
+const app = document.getElementById("app");
+
+function newState(role){
+  return { time:role.time, grade:0, und:0, judge:role.guide-1, prac:0,
+    pos:{receptive:0,resistive:0,resourceful:0,reflective:0},
+    missed:[], lockedMap:{}, hiddenNow:[], unthought:[], revealed:false, revealCount:0, extraPaid:0,
+    netPaid:0, readPaid:0, assistUsed:0, caught:false, biasFixed:false, promptTier:null,
+    premiumUsed:false, noticedR3:null, noticedR5:null, round:0 };
+}
+
+/* ---------- art ---------- */
+
+function portrait(r, mood, cls){
+  const hc = "#2b2220";
+  const hair = {
+    long:'<path d="M26 44 Q26 16 50 16 Q74 16 74 44 L77 78 L66 72 L66 44 Q58 34 40 36 L34 44 L34 72 L23 78 Z" fill="'+hc+'"/>',
+    side:'<path d="M28 44 Q27 18 50 17 Q73 18 72 42 Q66 30 50 30 Q40 30 32 34 Z" fill="'+hc+'"/>',
+    short:'<path d="M28 42 Q28 18 50 18 Q72 18 72 42 L66 33 L60 37 L54 31 L46 36 L40 31 L34 36 Z" fill="'+hc+'"/>',
+    pony:'<path d="M28 44 Q28 18 50 18 Q72 18 72 44 Q64 30 50 30 Q38 30 30 40 Z" fill="'+hc+'"/><path d="M70 30 Q88 36 80 62 Q78 48 69 42 Z" fill="'+hc+'"/><circle cx="71" cy="31" r="3" fill="#e0a526"/>',
+    cap:'<path d="M28 42 Q28 22 50 22 Q72 22 72 42 Z" fill="'+hc+'"/><path d="M27 36 Q30 14 50 14 Q70 14 73 36 Z" fill="#6f8f3a"/><path d="M50 36 L86 38 Q84 32 70 31 Z" fill="#56722b"/><circle cx="50" cy="16" r="2.5" fill="#56722b"/>',
+    bob:'<path d="M25 58 Q22 16 50 16 Q78 16 75 58 L67 58 L67 40 Q60 30 50 34 Q40 30 33 40 L33 58 Z" fill="'+hc+'"/><rect x="60" y="28" width="9" height="4" rx="2" fill="#f3c24f" transform="rotate(-20 64 30)"/>'
+  }[r.hair] || "";
+  const m = mood || "neutral";
+  const brow = m==="sad" ? '<path d="M37 41 L45 43 M63 41 L55 43" stroke="#3a2a22" stroke-width="2.2" stroke-linecap="round"/>'
+    : m==="think" ? '<path d="M37 41 L45 40 M55 38 L63 40" stroke="#3a2a22" stroke-width="2.2" stroke-linecap="round"/>'
+    : '<path d="M37 40 Q41 38 45 40 M55 40 Q59 38 63 40" stroke="#3a2a22" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+  const mouth = m==="happy" ? '<path d="M42 58 Q50 66 58 58" stroke="#8a3b2e" stroke-width="2.6" fill="#fff" stroke-linecap="round"/>'
+    : m==="sad" ? '<path d="M43 62 Q50 57 57 62" stroke="#8a3b2e" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
+    : m==="think" ? '<circle cx="52" cy="60" r="3" fill="#8a3b2e"/>'
+    : '<path d="M44 60 Q50 63 56 60" stroke="#8a3b2e" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
+  return '<svg class="pt '+(cls||"")+'" viewBox="0 0 100 100" aria-hidden="true">'+
+    '<circle cx="50" cy="50" r="48" fill="'+r.color+'" opacity=".18"/>'+
+    '<path d="M18 100 Q20 74 50 72 Q80 74 82 100 Z" fill="'+r.color+'"/>'+
+    '<path d="M42 72 L50 82 L58 72 Z" fill="#fff" opacity=".85"/>'+
+    '<rect x="44" y="62" width="12" height="12" rx="4" fill="'+r.skin+'"/>'+
+    '<ellipse cx="50" cy="46" rx="21" ry="23" fill="'+r.skin+'"/>'+
+    hair+ brow +
+    '<ellipse cx="41.5" cy="48" rx="2.6" ry="3.2" fill="#2b2220"/><ellipse cx="58.5" cy="48" rx="2.6" ry="3.2" fill="#2b2220"/>'+
+    '<circle cx="36" cy="55" r="3.2" fill="#f08c7a" opacity=".45"/><circle cx="64" cy="55" r="3.2" fill="#f08c7a" opacity=".45"/>'+
+    mouth + '</svg>';
+}
+
+const IC = {
+  hg:function(on){ return '<svg class="hg'+(on?"":" off")+'" viewBox="0 0 15 18" aria-hidden="true"><path d="M2 1h11M2 17h11" stroke="#f2c14e" stroke-width="2" stroke-linecap="round"/><path d="M3 2 Q3 7 7.5 9 Q3 11 3 16 H12 Q12 11 7.5 9 Q12 7 12 2 Z" fill="none" stroke="#f2c14e" stroke-width="1.6"/><path d="M4.5 15 Q7.5 11 10.5 15 Z" fill="#f2c14e"/></svg>'; },
+  grade:'<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="2" width="14" height="16" rx="2" fill="#fff"/><path d="M6 7h8M6 10h8M6 13h5" stroke="#e08a1e" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  und:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2 Q16 2 16 8 Q16 11 13 13 L13 15 H7 L7 13 Q4 11 4 8 Q4 2 10 2 Z" fill="#ffd966"/><rect x="7" y="16" width="6" height="2" rx="1" fill="#fff"/></svg>',
+  judge:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1 10 Q10 1 19 10 Q10 19 1 10 Z" fill="#fff"/><circle cx="10" cy="10" r="4" fill="#7b57c2"/><circle cx="11.5" cy="8.5" r="1.3" fill="#fff"/></svg>',
+  prac:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18 V9" stroke="#8fd19e" stroke-width="2.4" stroke-linecap="round"/><path d="M10 11 Q4 11 3 5 Q9 5 10 11 Z M10 9 Q16 9 17 3 Q11 3 10 9 Z" fill="#8fd19e"/></svg>',
+  lock:'<svg class="lockic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5 7 V5 Q5 2 8 2 Q11 2 11 5 V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+  think:'<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><ellipse cx="11" cy="8" rx="8" ry="6" fill="#fff"/><circle cx="4" cy="15" r="2" fill="#fff"/><circle cx="1.8" cy="18.2" r="1.2" fill="#fff"/></svg>'
+};
+const STAT_NAMES = { grade:"作業", und:"理解", judge:"AI 認知", prac:"練習" };
+const STAT_ICON = { grade:IC.grade, und:IC.und, judge:IC.judge, prac:IC.prac };
+
+function sceneArt(i){
+  const net = R && R.net;
+  const mountains = net ? '<path d="M70 150 L110 95 L140 130 L170 90 L220 150 Z" fill="#7aa35a"/><path d="M110 95 L120 108 L100 108 Z" fill="#fff" opacity=".7"/>' : '<rect x="70" y="118" width="40" height="32" fill="#c9d8e6"/><rect x="118" y="104" width="34" height="46" fill="#b8cadb"/><rect x="160" y="124" width="50" height="26" fill="#c9d8e6"/>';
+  const arts = [
+    // 1 afternoon desk
+    '<rect width="640" height="240" fill="#ffe3b3"/><rect y="170" width="640" height="70" fill="#d99a5b"/>'+
+    '<rect x="60" y="40" width="170" height="120" rx="8" fill="#9fd3f2" stroke="#fff" stroke-width="8"/>'+mountains+
+    '<circle cx="190" cy="70" r="16" fill="#ffd45e"/><path d="M60 100 H230 M145 40 V160" stroke="#fff" stroke-width="6"/>'+
+    '<circle cx="520" cy="60" r="26" fill="#fff" stroke="#8a5a2b" stroke-width="5"/><path d="M520 60 V44 M520 60 L532 66" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/>'+
+    '<rect x="250" y="120" width="170" height="10" rx="3" fill="#8a5a2b"/><rect x="270" y="60" width="130" height="62" rx="6" fill="#33415c"/><rect x="278" y="68" width="114" height="46" rx="3" fill="#bfe3ff"/>'+
+    '<path d="M290 80 H370 M290 90 H350 M290 100 H360" stroke="#6aa6d6" stroke-width="5" stroke-linecap="round"/>'+
+    '<rect x="430" y="104" width="60" height="16" rx="2" fill="#c2452d"/><rect x="436" y="90" width="52" height="14" rx="2" fill="#3a7ca5"/><rect x="432" y="78" width="56" height="12" rx="2" fill="#e0a526"/>',
+    // 2 night desk lamp
+    '<defs><radialGradient id="glow" cx="50%" cy="30%" r="60%"><stop offset="0" stop-color="#ffe7a1" stop-opacity=".9"/><stop offset="1" stop-color="#ffe7a1" stop-opacity="0"/></radialGradient></defs>'+
+    '<rect width="640" height="240" fill="#1d2a4d"/><rect y="176" width="640" height="64" fill="#3b2f4a"/>'+
+    '<rect x="420" y="30" width="160" height="110" rx="8" fill="#0f1a36" stroke="#5a6690" stroke-width="7"/><circle cx="530" cy="70" r="18" fill="#fff5c8"/><circle cx="522" cy="64" r="16" fill="#0f1a36"/>'+
+    '<circle cx="450" cy="55" r="2" fill="#fff"/><circle cx="480" cy="100" r="1.6" fill="#fff"/><circle cx="560" cy="115" r="2" fill="#fff"/>'+
+    '<ellipse cx="250" cy="150" rx="210" ry="110" fill="url(#glow)"/>'+
+    '<path d="M150 170 L180 70 L240 60" stroke="#e0a526" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M220 48 L280 60 L262 90 L205 78 Z" fill="#e0a526"/>'+
+    '<rect x="100" y="168" width="330" height="10" rx="3" fill="#6b4a2e"/><rect x="230" y="120" width="130" height="50" rx="3" fill="#fffdf3" transform="rotate(-4 295 145)"/>'+
+    '<text x="250" y="152" font-size="20" fill="#3a7ca5" font-weight="700" transform="rotate(-4 295 145)">P(A|B) = ?</text>',
+    // 3 screen & law book
+    '<rect width="640" height="240" fill="#e8eef7"/><rect y="180" width="640" height="60" fill="#b8c4d8"/>'+
+    '<rect x="40" y="40" width="120" height="140" fill="#8a5a2b"/><rect x="50" y="52" width="16" height="118" fill="#c2452d"/><rect x="70" y="60" width="16" height="110" fill="#3a7ca5"/><rect x="90" y="48" width="16" height="122" fill="#e0a526"/><rect x="110" y="64" width="16" height="106" fill="#2e8b57"/><rect x="130" y="56" width="16" height="114" fill="#7b57c2"/>'+
+    '<rect x="220" y="30" width="250" height="150" rx="10" fill="#23304d"/><rect x="232" y="42" width="226" height="118" rx="6" fill="#fff"/>'+
+    '<rect x="246" y="56" width="150" height="34" rx="12" fill="#e9f3fa"/><path d="M258 68 H380 M258 78 H350" stroke="#6aa6d6" stroke-width="5" stroke-linecap="round"/>'+
+    '<text x="300" y="138" font-size="26" font-weight="900" fill="#c2452d">20 歲？</text>'+
+    '<rect x="500" y="120" width="100" height="60" rx="4" fill="#2d3b5e"/><text x="522" y="158" font-size="20" fill="#f2c14e" font-weight="900">民法</text>',
+    // 4 phone
+    '<rect width="640" height="240" fill="#d7efe1"/><circle cx="90" cy="60" r="60" fill="#bfe5cf"/><circle cx="560" cy="200" r="90" fill="#bfe5cf"/>'+
+    '<rect x="250" y="16" width="140" height="230" rx="22" fill="#1f2638"/><rect x="260" y="36" width="120" height="200" rx="10" fill="#f5f8ff"/>'+
+    '<rect x="270" y="50" width="80" height="26" rx="10" fill="#e3e9f5"/><rect x="290" y="86" width="80" height="34" rx="10" fill="#3a7ca5"/><rect x="270" y="130" width="90" height="26" rx="10" fill="#e3e9f5"/>'+
+    '<g transform="translate(354 24)">'+(net?'<rect x="0" y="6" width="4" height="4" fill="#fff"/><rect x="6" y="3" width="4" height="7" fill="#555"/><rect x="12" y="0" width="4" height="10" fill="#555"/>':'<rect x="0" y="6" width="4" height="4" fill="#fff"/><rect x="6" y="3" width="4" height="7" fill="#fff"/><rect x="12" y="0" width="4" height="10" fill="#fff"/>')+'</g>'+
+    '<text x="420" y="110" font-size="44" font-weight="900" fill="#2e8b57" opacity=".35">DNA</text>',
+    // 5 presentation
+    '<rect width="640" height="240" fill="#f3e3f0"/><rect y="186" width="640" height="54" fill="#c9a7c2"/>'+
+    '<rect x="170" y="20" width="300" height="160" rx="6" fill="#fff" stroke="#8f3f5e" stroke-width="6"/>'+
+    '<g fill="#8b95a8"><circle cx="230" cy="80" r="16"/><rect x="212" y="98" width="36" height="46" rx="10"/><circle cx="290" cy="80" r="16"/><rect x="272" y="98" width="36" height="46" rx="10"/><circle cx="350" cy="80" r="16"/><rect x="332" y="98" width="36" height="46" rx="10"/><circle cx="410" cy="80" r="16"/><rect x="392" y="98" width="36" height="46" rx="10"/></g>'+
+    '<g fill="#fff"><rect x="222" y="74" width="16" height="5" rx="2"/><rect x="282" y="74" width="16" height="5" rx="2"/><rect x="342" y="74" width="16" height="5" rx="2"/><rect x="402" y="74" width="16" height="5" rx="2"/></g>'+
+    '<text x="238" y="168" font-size="18" fill="#8f3f5e" font-weight="900">我心目中的科學家</text>'+
+    '<rect x="40" y="170" width="90" height="30" rx="6" fill="#8f3f5e"/><rect x="510" y="170" width="90" height="30" rx="6" fill="#8f3f5e"/>'
+  ];
+  return '<svg class="bg" viewBox="0 0 640 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+arts[i]+'</svg>';
+}
+
+function titleArt(){
+  return '<svg viewBox="0 0 640 260" aria-hidden="true">'+
+    '<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9e6d"/><stop offset=".6" stop-color="#ffd27a"/><stop offset="1" stop-color="#ffe9b5"/></linearGradient></defs>'+
+    '<rect width="640" height="260" fill="url(#sky)"/><circle cx="500" cy="90" r="46" fill="#fff3c4"/>'+
+    '<path d="M0 200 L90 150 L170 190 L260 140 L360 190 L460 150 L560 185 L640 160 L640 260 L0 260 Z" fill="#e79a63" opacity=".6"/>'+
+    '<rect x="150" y="120" width="340" height="110" fill="#fff4e0"/><path d="M140 124 L320 70 L500 124 Z" fill="#c2452d"/><rect x="300" y="150" width="40" height="80" fill="#8a5a2b"/>'+
+    '<g fill="#9fd3f2"><rect x="175" y="140" width="40" height="30"/><rect x="235" y="140" width="40" height="30"/><rect x="365" y="140" width="40" height="30"/><rect x="425" y="140" width="40" height="30"/><rect x="175" y="185" width="40" height="30"/><rect x="235" y="185" width="40" height="30"/><rect x="365" y="185" width="40" height="30"/><rect x="425" y="185" width="40" height="30"/></g>'+
+    '<rect x="306" y="86" width="28" height="28" rx="14" fill="#fff"/><path d="M320 92 V100 L326 104" stroke="#8a5a2b" stroke-width="3" stroke-linecap="round" fill="none"/>'+
+    '<rect y="228" width="640" height="32" fill="#7aa35a"/>'+
+  '</svg>';
+}
+
+/* ---------- screens ---------- */
+
+function renderIntro(){
+  app.innerHTML = '<div class="screen title-screen">'+
+    '<div class="title-art">'+titleArt()+'</div>'+
+    '<div class="game-title">同一個 AI，不同的起點</div>'+
+    '<p class="game-sub">扮演一名高中生，用 AI 闖過五道學習關卡。六位同學面對同一個 AI、同樣的作業，起點卻各不相同。在人人都能用 AI 的時代，'+term("第二層數位落差")+'如何沿著'+term("文化資本")+'分布？</p>'+
+    '<div class="btn-row" style="justify-content:center"><button class="btn big" id="start">開始遊戲</button><button class="btn ghost" data-rules>遊戲說明</button>'+
+    (plays.length ? '<button class="btn ghost" id="seeHist">同學成績單（'+plays.length+'）</button>' : '')+'</div>'+
+    '<div class="notice">角色是依據文獻設計的虛構人物。遊戲中的分數是為了呈現研究發現中的機制而設計的簡化模型，不是實證數據；每一關結束後，會列出真實的研究發現與出處。</div>'+
+  '</div>';
+  document.getElementById("start").onclick = renderRoles;
+  const h = document.getElementById("seeHist"); if (h) h.onclick = renderHistoryOnly;
+  window.scrollTo(0,0);
+}
+
+function statbar(label, v, max, color){
+  return '<span class="sb"><span>'+label+'</span><span class="sb-track"><span style="width:'+Math.round(v/max*100)+'%;background:'+color+'"></span></span></span>';
+}
+function roleBadges(r){
+  return '<span class="badges">'+
+    (r.paid?'<span class="badge gold">付費版 AI</span>':'<span class="badge">免費版 AI</span>')+
+    '<span class="badge">AI 認知：'+JUDGE_LABEL[r.guide-1]+'</span>'+
+    (r.resist?'<span class="badge pink">對刻板印象敏感</span>':'')+
+    (r.net?'<span class="badge pink">網路不穩</span>':'')+
+    (r.dys?'<span class="badge pink">閱讀障礙</span>':'')+
+  '</span>';
+}
+
+function renderRoles(){
+  const cards = ROLES.map(function(r){
+    const played = plays.some(function(x){ return x.id===r.id; });
+    return '<button class="role'+(selId===r.id?" sel":"")+'" data-id="'+r.id+'" aria-pressed="'+(selId===r.id)+'">'+
+      (played?'<span class="played">已通關</span>':'')+portrait(r,"neutral")+
+      '<span class="role-name">'+r.name+'</span><span class="role-tag">'+r.tag+'</span>'+
+      '<span class="statbars">'+statbar("可用時間",r.time,11,"var(--time)")+statbar("學科基礎",r.know,3,"var(--und)")+statbar("有人教過",r.guide,3,"var(--prac)")+'</span>'+
+      roleBadges(r)+'</button>';
+  }).join("");
+  const s = selId ? ROLES.find(function(r){ return r.id===selId; }) : null;
+  const detail = s ? '<div class="panel" id="detail"><div class="detail">'+portrait(s,"happy")+'<div><h2>'+s.name+'｜'+s.tag+'</h2><p>'+s.bio+'</p>'+
+      '<p class="small muted">AI 認知：'+JUDGE_LABEL[s.guide-1]+'（'+JUDGE_DESC[s.guide-1]+'）。可用時間 '+s.time+' 點。</p>'+
+      '<div class="btn-row"><button class="btn" id="go">以'+s.name+'出發</button></div></div></div></div>' :
+      '<p class="light small" style="margin-top:14px">點選一位同學，查看他的背景。</p>';
+  app.innerHTML = '<div class="screen"><div class="sec-title">選擇你的角色</div>'+
+    '<p class="light small">角色之間的差異，對應研究中的經濟資本（AI 版本）、文化資本（學科基礎、有沒有人教過、'+term("AI 認知")+'）、生活條件（可用時間），以及居住地區與身心特質。<button class="link-btn" data-rules>看遊戲說明</button></p>'+
+    '<div class="role-grid">'+cards+'</div>'+detail+'</div>';
+  app.querySelectorAll(".role").forEach(function(b){
+    b.onclick = function(){ selId = b.dataset.id; renderRoles(); const d = document.getElementById("detail"); if (d) d.scrollIntoView({behavior:"smooth", block:"center"}); };
+  });
+  const go = document.getElementById("go");
+  if (go) go.onclick = function(){ R = s; S = newState(R); renderRound(); };
+  if (!rulesAuto && !rulesSeen()) { rulesAuto = true; openRules(); }
+}
+
+function hud(bumpKeys){
+  const hg = [];
+  for (let i=0;i<R.time;i++) hg.push(IC.hg(i<S.time));
+  const lv = [];
+  for (let i=0;i<5;i++) lv.push('<span class="lv'+(i<S.round?" done":"")+(i===S.round?" now":"")+'"></span>');
+  const stat = function(k){ return '<span class="st'+(bumpKeys&&bumpKeys.indexOf(k)>=0?" bump":"")+'" title="'+STAT_NAMES[k]+'" aria-label="'+STAT_NAMES[k]+' '+S[k]+'">'+STAT_ICON[k]+'<i class="stl">'+STAT_NAMES[k]+'</i> <b>'+S[k]+'</b></span>'; };
+  return '<div class="hud" role="status">'+
+    '<span class="hud-who">'+portrait(R,"neutral")+R.name+'</span>'+
+    '<span class="hud-time" aria-label="剩下 '+S.time+' 點時間">'+hg.join("")+'</span>'+
+    '<span class="hud-stats">'+stat("grade")+stat("und")+stat("judge")+stat("prac")+'</span>'+
+    '<span class="levels" aria-label="第 '+Math.min(S.round+1,5)+' 關，共 5 關">'+lv.join("")+'</span>'+
+    '<button class="help" data-rules aria-label="遊戲說明" title="遊戲說明">?</button>'+
+  '</div>';
+}
+
+function stageTitle(rd){ const p = rd.title.split("："); return '<div class="stage-title"><small>'+p[0]+'</small>'+p[1]+'</div>'; }
+function costIcons(n){
+  if (n===0) return '<span class="cost">不花時間</span>';
+  let h = ""; for (let i=0;i<n;i++) h += IC.hg(true);
+  return '<span class="cost" aria-label="花 '+n+' 點時間">'+h+'</span>';
+}
+
+/* ---------- rounds ---------- */
+
+const ROUNDS = [
+  { title:"第一關：公民報告",
+    big:{ num:"947", unit:"名大學生的調查", desc:"把 AI 當學習幫手，比讓 AI 代寫學得更好" },
+    scene:function(){ return '<p class="scene">公民老師出了一份報告，題目是〈青年的權利與公民參與〉，下週要交。你打算怎麼用 AI？</p>'+
+      (S.judge<=0 ? '<p class="inner-voice">你把 AI 當成比較聰明的 Google：問了，就會得到正確答案。</p>' : ''); },
+    flavor:{ chengen:"學校規定不能在課堂上用 AI，你只能回家自己摸索。", zhihan:"這週打工排了四天班，能寫報告的時間不多。",
+      boan:"學校的網路下午常常斷線，你只能回家開手機熱點。", yutong:"寫報告前要先讀完課本兩個章節，對你來說，光是讀就要花一整晚。" },
+    options:function(){ return [
+      { label:"請 AI 直接寫出整篇報告", ai:true, cost:1, eff:{grade:3, pos:{receptive:2}},
+        hook:"你讓 AI 替你完成了思考。這在研究裡叫做「"+term("替代型使用")+"」。",
+        text:"報告十分鐘就完成了，文句流暢。但交出去之後，你其實說不太出報告的論點是什麼。" },
+      { label:"上傳課本章節，請 AI 依講義寫出整篇報告", premium:true, ai:true, cost:1, eff:{grade:4, pos:{receptive:2}},
+        hook:"你用付費功能讓 AI 替你完成了思考。作業更快、分數更高，這在研究裡同樣叫做「"+term("替代型使用")+"」。",
+        text:"付費版可以讀取講義，報告和課本內容對得很準，老師給了高分。但這份報告的思考幾乎都是 AI 做的。" },
+      { label:"請 AI 列出大綱，內容自己寫", ai:true, cost:3, eff:{grade:2, und:2, prac:1, pos:{resourceful:1}},
+        hook:"你讓 AI 幫你搭好架子，內容仍由你自己完成。",
+        text:"大綱幫你理清了架構，內容是你自己寫的。你也練習了怎麼把任務拆給 AI。" },
+      { label:"請 AI 把課本整理成條列重點並唸給我聽，內容自己寫", onlyFor:"yutong", assist:true, ai:true, cost:2, eff:{grade:2, und:2, prac:1, pos:{resourceful:2}},
+        hook:"你用 AI 把文字轉成你讀得進去的形式，思考仍然是你自己的。",
+        text:"AI 把課本整理成重點，還用語音唸給你聽。你很快抓到內容，能花在寫作上的時間也多了。" },
+      { label:"自己先寫初稿，再請 AI 挑出論證的漏洞", careful:true, ai:true, cost:4, eff:{grade:2, und:3, judge:1, prac:1, pos:{reflective:2}},
+        lock: R.guide>=2 ? null : "沒有人教過你可以這樣用 AI",
+        hook:"你先自己想，再讓 AI 幫你找漏洞。AI 在這裡是你的陪練。",
+        text:"AI 指出你有一段論證跳得太快。你補上了證據，也更清楚自己的論點。" },
+      { label:"不用 AI，自己查資料寫", read:true, cost:4, eff:{grade:1, und:2, pos:{resistive:2}},
+        hook:"你選擇完全不靠 AI。這份謹慎很常見，代價是你得獨自花更多時間。",
+        text:"你花了很多時間，報告扎實但不夠完整。你理解了內容，只是沒有用到 AI 能提供的協助。" }
+    ]; },
+    fact:'一項研究調查了 947 名美國大學生：把 AI 當學習幫手的人，對自己的學業更有信心，也更有創造力；讓 AI 代寫的人，學習成果反而比較差（Zhang et al. 2024，轉引自 Manganello et al. 2026：6）。',
+    voices:[ { q:"它幾秒內就給出答案，大大縮短了我們的時間，也減少了我們的努力。", who:"一位中國研究生描述剛開始用 AI 的感受", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
+      { q:"AI 讓人得到靈感、想法、指引和建議，但它也不是可以盲目信任的東西。", who:"一位挪威女大學生談自己怎麼看待 AI", src:"Møgelvang et al. 2024，轉引自 Manganello et al. 2026：6" },
+      { q:"AI 可以先當我學習時的『聆聽者』，接收我的想法和架構，幫我整理思緒；之後再把它當成『知識延伸者』。", who:"一位中國研究生說明自己怎麼和 AI 分工", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5-6" } ],
+    chart:{ title:"家庭背景和「把 AI 當學習幫手」有關嗎？", type:"div", scale:[-0.3,0.3],
+      rows:[ { label:"家庭社經地位", v:0.21, text:"+.21", tip:"家庭社經地位越高，越常把 AI 當學習幫手" },
+             { label:"學生本人的社經地位", v:-0.24, text:"−.24", tip:"學生本人的社經地位越高，反而越少這樣用" } ],
+      note:"數字是統計模型裡的關聯強度（−1 到 1）。往右：越高越常這樣用；往左：越高反而越少。", src:"Zhang et al. 2024，轉引自 Manganello et al. 2026：6" },
+    ask:"你上一次請 AI 幫忙寫作業時，是讓它替你想，還是陪你想？",
+    design:"有沒有人教過你，決定了你看得到哪些用法；付費版讓作業更快，但不會讓理解更深。",
+    roleNote:{
+      boan:"網路不穩，讓你每次用 AI 都要多等。偏鄉的學生常面臨缺乏受過訓練的老師與基礎設施不足（Alam and Mohanty 2023，轉引自 Khan 2026：745），也得忍受不穩定的網路（Gonzabay-Jiménez et al. 2026: 196）。不過 PISA 也發現，OECD 國家的鄉村學校平均電腦反而比都市多（OECD 2026: 275），問題不一定出在設備。",
+      yutong:"對有閱讀障礙的你來說，請 AI 整理重點、唸給你聽，是一種輔助，不一定是偷懶。研究指出，AI 可以透過語音辨識等工具，協助在語言處理上有困難的學生（Walter 2024: 22）。"
+    },
+    extra:function(c){
+      if (c.o.premium) return "付費功能讓作業更快完成。更快，不等於學得更多。付費工具帶來的是效率上的優勢（Khan 2026: 746）。";
+      if (R.guide<2) return "「自己先寫、再請 AI 挑漏洞」這種用法，你看得到卻選不了，因為沒有人教過你。";
+      return "";
+    }
+  },
+  { title:"第二關：數學卡關",
+    big:{ num:"76 萬", unit:"名 15 歲學生", desc:"幾乎每天用 AI 學習的人，科學成績反而比不用的人低" },
+    scene:function(){ return '<p class="scene">晚上寫數學講義，卡在一題條件機率，明天就要交。</p>'; },
+    flavor:{ zhihan:"打工到九點才回家，眼睛已經很累了。", yuxiang:"哄弟妹睡覺之後，已經快十一點了。",
+      boan:"晚上家裡的網路又斷了一次，你只能等它恢復。", yutong:"講義上的題目很長，你讀了三遍才看懂題意。" },
+    options:function(){ return [
+      { label:"拍照問 AI，直接抄答案", ai:true, cost:1, eff:{grade:2, pos:{receptive:2}},
+        hook:"作業交了，但這一題的思考是 AI 做的。",
+        text:"答案是對的，作業也交了。可是換一個數字，你還是不會算。" },
+      { label:"請 AI 一步一步解釋解法", ai:true, cost:2, eff:{grade:2, und:2, prac:1, pos:{resourceful:1}},
+        hook:"你看懂了 AI 的解法，下次遇到類似的題目，比較有機會自己解開。",
+        text:"你看懂了每一步，也發現自己卡在「條件」的意思。" },
+      { label:"請 AI 先不要給答案，用提問引導我想", careful:true, ai:true, cost:3, eff:{grade:2, und:3, judge:1, prac:1, pos:{reflective:2}},
+        lock: (R.guide>=3 || S.prac>=1) ? null : "你還不知道可以這樣要求 AI（上一關的練習可以解鎖）",
+        hook:"你讓 AI 用提問陪你思考，答案是你自己想出來的。",
+        text:"AI 問你：「已知第一次抽到紅球，樣本空間變成什麼？」你自己想出了答案。" },
+      { label:"不用 AI，自己翻課本重算", read:true, cost:3, eff:{grade:1, und:2, pos:{resistive:2}},
+        hook:"你靠自己算出來了，代價是一整個晚上。",
+        text:"你算了很久，最後算出來了，只是花掉了整個晚上。" }
+    ]; },
+    fact:'PISA 調查了全球約 76 萬名 15 歲學生：幾乎每天用 AI 學習的人，科學成績反而比不用的人低；每週使用的人，則和不用的人差不多。報告也提醒，這是相關，不一定代表是 AI 造成的（OECD 2026: 239）。',
+    voices:[ { q:"它讓找答案變得太容易，會讓人失去自己思考、批判的能力。", who:"一位挪威女大學生對 AI 的擔憂", src:"Møgelvang et al. 2024，轉引自 Manganello et al. 2026：7" },
+      { q:"它幾秒內就給出答案，大大縮短了我們的時間，也減少了我們的努力。", who:"一位中國研究生描述剛開始用 AI 的感受", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
+      { q:"AI 可以先當我學習時的『聆聽者』，接收我的想法和架構，幫我整理思緒；之後再把它當成『知識延伸者』。", who:"一位中國研究生說明自己怎麼和 AI 分工", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5-6" } ],
+    chart:{ title:"OECD 國家平均：15 歲學生用 AI 做課業嗎？", scale:[0,100],
+      rows:[ { label:"會用 AI 做課業", v:86, text:"86%" },
+             { label:"從未或幾乎從未", v:14, text:"14%" } ],
+      note:"「會用」指在 PISA 問到的幾種課業用途裡，至少有一種用過。", src:"OECD 2026: 238" },
+    ask:"如果明天的考試不能用 AI，你今晚的選擇會不一樣嗎？",
+    design:"上一關的練習會解鎖新的用法；AI 認知低的角色，要停下來想，才會看到它。",
+    roleNote:{
+      boan:"網路不穩時，不用 AI 反而比較省時間。你選擇不用 AI，可能是環境替你做的決定。",
+      yutong:"翻課本重算，對你來說要多讀好幾遍；請 AI 解釋，則能跳過文字的門檻，直接處理數學本身。"
+    },
+    extra:function(c){
+      if (c.unthought.length) return "其實還有一種做法：請 AI 先別給答案，改用提問引導你。你沒有看到這個選項，因為還沒有人讓你知道 AI 可以這樣用。";
+      if (c.revealed) return "你停下來想了一下，才看到更好的用法。對 AI 認知高的以晴來說，這個選項一開始就在那裡。";
+      return "";
+    }
+  },
+  { title:"第三關：AI 說錯了嗎？",
+    big:{ num:"4 / 10", unit:"弱勢學生是科學低成就", desc:"優勢學生大約只有 1 / 10" },
+    scene:function(){
+      S.noticedR3 = (R.know + S.judge) >= 4;
+      return '<p class="scene">報告還缺一段「青年從幾歲開始可以行使哪些權利」。你請 AI 整理，它回答：</p>'+
+        '<div class="ai-say"><span><b>AI：</b>在臺灣，依民法規定，年滿 20 歲才算成年，可以獨立簽訂契約……</span></div>'+
+        (S.noticedR3 ? '<p class="inner-voice">你讀到這裡覺得不對勁：好像聽說成年年齡已經改了。</p>'
+                     : '<p class="inner-voice">這段條理清楚，看起來很有說服力。'+(S.judge<=0?'AI 是從網路上查來的，應該就是正確資料吧。':'')+'</p>');
+    },
+    flavor:{ yutong:"法規條文密密麻麻，光是看就讓你頭痛。" },
+    options:function(){ return [
+      { label:"直接貼進報告", cost:0, run:function(){
+          if (S.noticedR3){ S.missed.push("你懷疑 AI 說錯了，但沒有處理。"); return { eff:{grade:-2, pos:{receptive:1}}, hook:"你察覺了問題，卻選擇不處理。", text:"你覺得怪怪的，但還是用了。老師在這段標了紅字：民法的成年年齡自 2023 年起已下修為 18 歲。" }; }
+          S.missed.push("AI 說臺灣 20 歲成年，但民法自 2023 年起已下修為 18 歲，你沒有發現。");
+          return { eff:{grade:-2, pos:{receptive:1}}, hook:"你沒發現 AI 說錯了。這不代表你不認真：不知道正確答案的時候，錯的答案看起來和對的一樣可信。", text:"老師在這段標了紅字：民法的成年年齡自 2023 年起已下修為 18 歲。" }; } },
+      { label:"追問 AI：「你確定嗎？請附上法條出處」", careful:true, ai:true, cost:1, run:function(){
+          if (S.judge>=2) return { eff:{und:1, judge:1, pos:{resourceful:1}}, caught:true, hook:"你要求 AI 拿出根據，也看出了根據有問題。", text:"你看出它給的條文日期對不上，再追問一次。AI 更正：成年年齡自 2023 年起已下修為 18 歲。" };
+          S.missed.push("AI 附上了看似可信的出處，你沒能判斷它是錯的。");
+          return { eff:{grade:-1, pos:{receptive:1}}, hook:"你要求 AI 附上出處，卻看不出出處有問題。檢查這件事，本身也需要知識。", text:"AI 附上了一個看起來很正式的出處，你覺得沒問題就用了。老師在這段標了紅字：成年年齡自 2023 年起已下修為 18 歲。" }; } },
+      { label:"找課本和政府的法規資料庫逐條核對", careful:true, read:true, caught:true, cost:2, eff:{und:2, judge:1, pos:{reflective:1}},
+        hook:"你花時間逐條核對，抓到了 AI 的錯誤。",
+        text:"你在法規資料庫查到：民法成年年齡自 2023 年 1 月 1 日起下修為 18 歲。你修正了報告。" },
+      { label:"用語音朗讀政府法規資料庫的原文，自己聽完再比對", onlyFor:"yutong", assist:true, careful:true, caught:true, cost:1, eff:{und:2, judge:1, pos:{reflective:1}},
+        hook:"你用語音工具當作閱讀的輔具，親自比對了原文。",
+        text:"你聽完法規原文，發現民法成年年齡自 2023 年 1 月 1 日起已下修為 18 歲。你修正了報告。" }
+    ]; },
+    fact:'在一項研究中，90% 的學生認為，要判斷 AI 說得對不對，得先有紮實的學科知識（Chiu 2024，轉引自 Park 2025：9）。這些知識本身就分布不均：PISA 發現，每 10 個弱勢學生中，將近 4 個是科學低成就，優勢學生只有大約 1 個（OECD 2026: 69）。',
+    voices:[ { q:"它給了我錯誤的答案，讓我開始懷疑它的可信度。", who:"一位中國研究生在測試 AI 之後", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
+      { q:"AI 讓人得到靈感、想法、指引和建議，但它也不是可以盲目信任的東西。", who:"一位挪威女大學生談自己怎麼看待 AI", src:"Møgelvang et al. 2024，轉引自 Manganello et al. 2026：6" } ],
+    chart:{ title:"科學低成就的學生比例（OECD 國家平均）", scale:[0,100],
+      rows:[ { label:"弱勢學生", v:37, text:"37%" },
+             { label:"優勢學生", v:12, text:"12%" } ],
+      note:"弱勢、優勢依學生的社經地位區分。", src:"OECD 2026: 69" },
+    ask:"你上一次發現 AI 說錯，是什麼時候？你是怎麼發現的？",
+    design:"學科基礎加上 AI 認知越高，越容易察覺錯誤。",
+    roleNote:{
+      yutong:"逐條閱讀法規，對你來說是很高的門檻；語音朗讀這類輔具，讓你有能力親自查證。輔具決定的是你能不能參與，和你夠不夠認真無關。"
+    },
+    extra:function(c){
+      if (c.unthought.length) return "你甚至沒有想到可以檢查。有研究發現，部分中學生以為 ChatGPT 和 Google 一樣，是去網路上查資料，所以它說的就是事實（Cheung et al. 2024，轉引自 Park 2025：7）。";
+      if (c.revealed) return "你停下來想了一下，才想到可以檢查。對 AI 認知高的角色來說，檢查是理所當然的第一步。";
+      return "";
+    }
+  },
+  { title:"第四關：寫一段好的提示", builder:true,
+    big:{ num:"53–78%", unit:"的回答品質差異", desc:"來自提示寫得好不好" },
+    scene:function(){ return '<p class="scene">明天生物小考考「細胞分裂」，你想請 AI 幫你複習。選擇要放進提示裡的內容，右邊的手機會即時組出你的提示。</p>'; },
+    flavor:{ zhihan:"只能在打工的休息時間，用手機快速打一段話。", boan:"手機訊號只有一格，送出提示後要等很久。" },
+    roleNote:{
+      boan:"網路不穩，讓寫得越完整的提示越難送出去。環境的限制，也會限制你練習寫提示的機會。"
+    },
+    fact:'一項實驗發現，提示寫得好不好，可以解釋 AI 回答品質一半以上的差異（53% 到 78%）。但學生多半覺得寫提示很簡單，難度自評平均只有 1.91 分（0 到 5 分），實際表現卻只有中等（Knoth et al. 2024）。',
+    voices:[ { q:"多練習之後，我發現指令是得到理想結果與答案的關鍵。", who:"一位中國研究生談自己怎麼學會用 AI", src:"Yang et al. 2024，轉引自 Manganello et al. 2026：5" },
+      { q:"老師說要用 Google 帳號註冊免費版的 AI。我想不起來怎麼註冊，也忘了密碼，所以就假裝在練習。但老師沒有放棄。", who:"一位以色列的第一代大學生、少數族群學生", src:"Hadar Shoval 2025，轉引自 Manganello et al. 2026：7" } ],
+    chart:{ title:"提示寫得好不好，能解釋多少回答品質的差異？", scale:[0,100],
+      rows:[ { label:"任務一：旅遊規劃", v:53, text:"53%" },
+             { label:"任務二：科學專案規劃", v:78, text:"78%" } ],
+      note:"剩下的差異來自其他因素。", src:"Knoth et al. 2024" },
+    ask:"你平常寫給 AI 的提示，通常有幾句話？有人教過你怎麼寫嗎？",
+    design:"被鎖住的寫法，代表還沒有人教過你，或你還沒練過。",
+    extra:function(){
+      const n = S.lockedMap[S.round] || 0;
+      return n ? "有 "+n+" 種寫法你還沒學過，所以你的提示只能寫到這裡。"+term("提示工程")+"的能力，可以在有引導的訓練下改善（Park 2025: 8）。" : "";
+    }
+  },
+  { title:"第五關：簡報封面",
+    big:{ num:"26", unit:"名弱勢社區的學生", desc:"用自己被歧視的經驗，看出 AI 圖像的偏誤" },
+    scene:function(){
+      S.noticedR5 = R.resist || S.judge>=4;
+      let v;
+      if (R.resist) v = "你一看就覺得不對：為什麼科學家都長得一樣？你想起自己被貼標籤的經驗。";
+      else if (S.noticedR5) v = "你注意到，名單上全是西方男性。";
+      else v = "看起來沒什麼問題，這些都是課本上出現過的名字。";
+      return '<p class="scene">小組要做一份「我心目中的科學家」簡報，你請 AI 描述封面插圖，並推薦五位科學家。它回答：</p>'+
+        '<div class="ai-say"><span><b>AI：</b>封面可以畫一位穿白袍、戴眼鏡的中年白人男性。推薦名單：愛因斯坦、牛頓、達爾文、愛迪生、霍金。</span></div>'+
+        '<p class="inner-voice">'+v+'</p>';
+    },
+    flavor:{},
+    options:function(){
+      if (S.noticedR5) return [
+        { label:"請 AI 重新推薦，涵蓋不同性別與地區", ai:true, fixBias:true, cost:1, eff:{und:1, judge:1, pos:{reflective:1}},
+          hook:"你要求 AI 修正偏誤，名單變得更完整。",
+          text:"AI 補上了居禮夫人、吳健雄等人，封面也改成不同樣貌的科學家。" },
+        { label:"自己查資料，補上被忽略的科學家", read:true, fixBias:true, cost:2, eff:{und:2, judge:1, pos:{resistive:1}},
+          hook:"你自己補上了被 AI 忽略的科學家。",
+          text:"你查到許多被忽略的女性與非西方科學家，簡報因此更完整。" },
+        { label:"算了，直接用", cost:0, run:function(){
+            S.missed.push("你發現 AI 的名單有偏誤，但沒有時間或力氣處理。");
+            return { eff:{pos:{receptive:1}}, hook:"你看見了問題，卻沒有處理。", text:"你把簡報交了出去。那張封面和名單，又一次告訴大家「科學家」長什麼樣子。" }; } }
+      ];
+      return [
+        { label:"直接放進簡報", cost:0, run:function(){
+            S.missed.push("AI 的封面與名單全是西方男性，強化了「科學家」的刻板印象，你沒有發現。");
+            return { eff:{pos:{receptive:1}}, hook:"你沒發現名單的問題。這些名字都在課本上出現過，偏誤常常就藏在理所當然的地方。", text:"簡報順利完成。那張封面和名單，又一次告訴大家「科學家」長什麼樣子。" }; } },
+        { label:"再仔細檢查一次", cost:1, run:function(){
+            S.missed.push("你檢查了錯字和排版，但沒有察覺名單的偏誤。");
+            return { eff:{pos:{resourceful:1}}, hook:"你很仔細，但沒有意識到偏誤的時候，再仔細也找不到它。", text:"你檢查了錯字和排版，都沒問題。沒有意識到偏誤時，仔細檢查也找不到它。" }; } }
+      ];
+    },
+    fact:'一項研究中，26 名來自弱勢社區的學生，能用自己被歧視的經驗，看出 AI 圖像裡的性別與種族偏誤。研究者稱之為「'+term("抵抗資本")+'」，但也提醒，看得出問題，不代表有力量改變 AI（Manganello et al. 2026: 4）。',
+    voices:[ { q:"很難讓它看起來像我。", who:"一位美國非裔學生用 AI 生成自畫像之後", src:"Cao et al. 2025，轉引自 Manganello et al. 2026：4" },
+      { q:"至少在美國歷史上，大多數有名的人都是白人男性。", who:"一位美國學生解釋 AI 圖像為什麼偏向某些人", src:"Cao et al. 2025，轉引自 Manganello et al. 2026：4" } ],
+    chart:{ title:"不太信任 AI 的學生，收穫反而更多", scale:[0,1],
+      series:["不太信任 AI","很信任 AI"],
+      rows:[ { group:"學業自信", label:"不太信任 AI", s:0, v:0.60, text:".60" },
+             { group:"學業自信", label:"很信任 AI", s:1, v:0.36, text:".36" },
+             { group:"創造力", label:"不太信任 AI", s:0, v:0.65, text:".65" },
+             { group:"創造力", label:"很信任 AI", s:1, v:0.46, text:".46" } ],
+      note:"數字是「把 AI 當學習幫手」和學業自信、創造力的關聯強度（0 到 1）。研究者認為，健康的懷疑讓學生更能掌握自己的學習。", src:"Zhang et al. 2024，轉引自 Manganello et al. 2026：7" },
+    ask:"你用 AI 生成的圖片或例子裡，出現過和你一樣的人嗎？",
+    design:"對刻板印象敏感的角色，不需要任何課程就能察覺偏誤。",
+    extra:function(c){
+      if (S.noticedR5 && c.o.label.indexOf("算了")===0) return "你看見了問題，卻沒有時間處理。研究也提醒，看得出問題，不代表有力量改變它。";
+      if (R.resist && S.noticedR5) return "你一眼就看出問題，因為你知道被貼標籤是什麼感覺。像芷涵這樣的學生，在研究裡真的存在。";
+      return "";
+    }
+  }
+];
+
+const COMPONENTS = [
+  { k:"scope", label:"限定範圍", text:"範圍是高一生物第三章。", adv:false, lock:function(){ return null; } },
+  { k:"format", label:"指定形式：出 5 題選擇題", text:"請出 5 題選擇題。", adv:false, lock:function(){ return null; } },
+  { k:"level", label:"說明自己的程度", text:"我常把有絲分裂和減數分裂搞混。", adv:true,
+    lock:function(){ return (R.guide>=2 || S.prac>=2) ? null : "還沒有人教過你這種寫法"; } },
+  { k:"explain", label:"要求解析與常見錯誤", text:"每題附上解析，並說明常見的錯誤想法。", adv:true,
+    lock:function(){ return (R.guide>=2 || S.prac>=1) ? null : "還沒有人教過你這種寫法"; } },
+  { k:"ask", label:"請 AI 先問我問題", text:"出題前先問我兩個問題，確認我哪裡不懂。", adv:true,
+    lock:function(){ return (R.guide>=3 || S.prac>=3) ? null : "還沒有人教過你這種寫法"; } },
+  { k:"check", label:"請 AI 檢查自己的答案", text:"出完題後，請再檢查一次答案是否正確。", adv:true,
+    lock:function(){ return S.judge>=2 ? null : "你還沒意識到 AI 出的題目也可能出錯"; } }
+];
+function builderCost(){
+  let adv = 0, n = 0;
+  pick.forEach(function(k){ n++; if (COMPONENTS.find(function(c){ return c.k===k; }).adv) adv++; });
+  if (n===0) return 0;
+  return (adv>=2 ? 2 : 1) + (R.net ? 1 : 0);
+}
+function builderQuality(){
+  let q = 0;
+  pick.forEach(function(k){ q += COMPONENTS.find(function(c){ return c.k===k; }).adv ? 2 : 1; });
+  return q;
+}
+
+function stageAndDialog(rd, bodyHtml, mood, speaker){
+  return '<div class="stage">'+sceneArt(S.round)+stageTitle(rd)+portrait(R, mood||"neutral", "hero")+'</div>'+
+    '<div class="dialog"><span class="speaker">'+(speaker||R.name)+'</span>'+bodyHtml+'</div>';
+}
+function flavorHtml(rd){
+  return rd.flavor && rd.flavor[R.id] ? '<p class="flavor">'+rd.flavor[R.id]+'</p>' : "";
+}
+
+function renderRound(){
+  const rd = ROUNDS[S.round];
+  if (rd.builder) { renderBuilder(rd); return; }
+  const scene = rd.scene();
+  const opts = rd.options().filter(function(o){ return !o.onlyFor || o.onlyFor===R.id; });
+  const hideCareful = S.judge<=0 && !S.revealed;
+  let lockedCount = 0, letter = 0;
+  S.hiddenNow = [];
+  let cards = "";
+  opts.forEach(function(o, i){
+    o._cost = o.cost;
+    if (o.premium && !R.paid) o._lock = "付費版才有這個功能";
+    else if (o.lock) o._lock = o.lock;
+    const notes = [];
+    if (o.careful && S.judge<=1 && !o._lock) { o._cost += 1; o._extra = true; notes.push("你還不熟悉這種用法，要多花 1 點時間"); }
+    if (R.net && o.ai && o._cost>0 && !o._lock) { o._cost += 1; o._net = true; notes.push("網路不穩，要多等 1 點時間"); }
+    if (R.dys && o.read && !o._lock) { o._cost += 1; o._read = true; notes.push("要讀大量文字，要多花 1 點時間"); }
+    if (o.assist) notes.push("輔具用法：幫你跨過閱讀的門檻");
+    o._notes = notes.join("；");
+    if (o._lock) lockedCount++;
+    else if (o.careful && hideCareful) { S.hiddenNow.push(o.label); return; }
+    else if (o._cost > S.time) o._lock = "時間不夠了";
+    const dis = o._lock ? " disabled" : "";
+    const note = o._lock ? IC.lock+o._lock : o._notes;
+    cards += '<button class="opt" data-i="'+i+'"'+dis+'><span class="letter">'+String.fromCharCode(65+letter++)+'</span>'+
+      '<span><span class="opt-label">'+o.label+'</span>'+(o.premium?'<span class="tag-premium">付費版</span>':'')+
+      (note?'<span class="why">'+note+'</span>':'')+'</span>'+costIcons(o._cost)+'</button>';
+  });
+  if (S.hiddenNow.length) {
+    const can = S.time>=1;
+    cards += '<button class="opt reveal" id="reveal"'+(can?"":" disabled")+'><span class="letter">'+IC.think+'</span>'+
+      '<span><span class="opt-label">停下來想一想：還有沒有別的做法？</span>'+
+      '<span class="why">'+(can?"你習慣直接接受 AI 給的東西，要刻意停下來，才會想到其他用法":"已經沒有時間停下來想了")+'</span></span>'+costIcons(1)+'</button>';
+  }
+  S.lockedMap[S.round] = lockedCount;
+  app.innerHTML = '<div class="screen">'+hud()+stageAndDialog(rd, scene+flavorHtml(rd), S.judge<=0?"neutral":"think")+
+    '<div class="ask-title">你要怎麼做？</div><div class="opts">'+cards+'</div></div>';
+  app.querySelectorAll(".opt:not([disabled]):not(.reveal)").forEach(function(b){
+    b.onclick = function(){ choose(rd, opts[+b.dataset.i]); };
+  });
+  const rv = document.getElementById("reveal");
+  if (rv && !rv.disabled) rv.onclick = function(){ S.time -= 1; S.revealed = true; S.revealCount++; renderRound(); };
+  window.scrollTo(0,0);
+}
+
+function renderBuilder(rd){
+  pick = new Set();
+  S.hiddenNow = [];
+  let lockedCount = 0;
+  const list = COMPONENTS.map(function(c){
+    const l = c.lock();
+    if (l) lockedCount++;
+    return '<label class="comp'+(l?" locked":"")+'"><input type="checkbox" value="'+c.k+'"'+(l?" disabled":"")+'><span class="tick" aria-hidden="true"></span>'+
+      '<span><b>'+c.label+'</b>'+(c.adv?' <span class="badge">進階</span>':'')+
+      (l?'<span class="why">'+IC.lock+l+'</span>':'<span class="why">「'+c.text+'」</span>')+'</span></label>';
+  }).join("");
+  S.lockedMap[S.round] = lockedCount;
+  app.innerHTML = '<div class="screen">'+hud()+stageAndDialog(rd, rd.scene()+flavorHtml(rd), "think")+
+    '<div class="ask-title">組合你的提示</div>'+
+    '<div class="builder"><div>'+list+'</div>'+
+    '<div><div class="phone"><div class="phone-top"><span>AI 助理</span><span>'+(R.net?"訊號 1 格":"訊號良好")+'</span></div>'+
+    '<div class="bubble-me" id="pbox" aria-live="polite"></div><p class="pcost" id="pcost"></p>'+
+    '<button class="btn" id="send">送出提示</button></div></div></div></div>';
+  const upd = function(){
+    const parts = ["幫我複習細胞分裂。"];
+    COMPONENTS.forEach(function(c){ if (pick.has(c.k)) parts.push(c.text); });
+    document.getElementById("pbox").textContent = parts.join("");
+    app.querySelectorAll(".comp").forEach(function(el){
+      const inp = el.querySelector("input");
+      el.classList.toggle("on", inp.checked);
+      el.querySelector(".tick").textContent = inp.checked ? "✓" : "";
+    });
+    const cost = builderCost();
+    const over = cost > S.time;
+    let warn = "";
+    if (over) {
+      if (S.time===0) warn = "（時間已經用完，只能送出最簡單的提示）";
+      else if (R.net && S.time<2) warn = "（網路不穩，剩下的時間只夠送出最簡單的提示）";
+      else warn = "（時間不夠，最多只能選一個進階項目）";
+    } else if (R.net && cost>0) warn = "（含網路不穩多等的 1 點）";
+    document.getElementById("pcost").textContent = (cost===0?"不花時間":"花 "+cost+" 點時間")+warn;
+    document.getElementById("send").disabled = over;
+  };
+  app.querySelectorAll(".comp input").forEach(function(inp){
+    inp.onchange = function(){ if (inp.checked) pick.add(inp.value); else pick.delete(inp.value); upd(); };
+  });
+  document.getElementById("send").onclick = function(){
+    const q = builderQuality(), cost = builderCost();
+    let o;
+    if (q<=2) o = { cost:cost, tier:"low", eff:{grade:1, pos:{receptive:1}}, hook:"你的提示很短，AI 的回答也很空泛。多數人都不覺得寫提示有什麼難的。",
+      text:'<div class="ai-say"><span><b>AI：</b>細胞分裂是一個細胞分成兩個的過程，可以分為有絲分裂和減數分裂……（接著是一大段課本式的說明，沒有題目，也不確定是不是你的考試範圍。）</span></div>提示太籠統，AI 給的內容也很籠統。' };
+    else if (q<=5) o = { cost:cost, tier:"mid", eff:{grade:2, und:1, pos:{resourceful:1}}, hook:"你的提示有了範圍和形式，AI 的回答也跟著具體起來。",
+      text:'<div class="ai-say"><span><b>AI：</b>以下是 5 題選擇題：1. 下列何者發生在減數分裂第一次分裂？……（題目符合範圍，但解析很短，你不確定自己錯在哪裡。）</span></div>題目有幫助，但沒有針對你的弱點。' };
+    else o = { cost:cost, tier:"high", eff:{grade:2, und:3, prac:1, pos:{resourceful:1, reflective:1}}, hook:"你寫出了一段具體、針對自己需求的提示，AI 的回答也跟著變得有用。",
+      text:'<div class="ai-say"><span><b>AI：</b>出題前想先問你：你覺得同源染色體在哪個階段分離？……（接著的題目針對你搞混的地方，每一題錯誤選項都有解析。）</span></div>你寫出了一段好的提示，AI 的回應也針對你真正需要的地方。' };
+    choose(rd, o);
+  };
+  upd();
+  window.scrollTo(0,0);
+}
+
+function applyEff(eff){
+  const d = [];
+  ["grade","und","judge","prac"].forEach(function(k){
+    if (eff[k]) { S[k] += eff[k]; d.push([k, eff[k]]); }
+  });
+  if (eff.pos) Object.keys(eff.pos).forEach(function(k){ S.pos[k] += eff.pos[k]; });
+  return d;
+}
+
+// 每關的學生引言輪流出現：記住上次看到哪一句，下次換下一句
+let voiceSeen = {};
+try { voiceSeen = JSON.parse(localStorage.getItem("ai-sim-voices") || "{}") || {}; } catch(e) { voiceSeen = {}; }
+function pickVoice(rd){
+  const key = String(ROUNDS.indexOf(rd));
+  const n = rd.voices.length;
+  const last = voiceSeen[key];
+  const i = (typeof last === "number") ? (last + 1) % n : Math.floor(Math.random() * n);
+  voiceSeen[key] = i;
+  try { localStorage.setItem("ai-sim-voices", JSON.stringify(voiceSeen)); } catch(e) {}
+  return rd.voices[i];
+}
+
+function chartHtml(ch){
+  const lo = ch.scale[0], hi = ch.scale[1], span = hi - lo;
+  const zero = (0 - lo) / span * 100;
+  let group = "", rows = "";
+  ch.rows.forEach(function(r){
+    if (r.group && r.group !== group) { group = r.group; rows += '<div class="ch-group">'+group+'</div>'; }
+    const w = Math.abs(r.v) / span * 100;
+    const left = r.v < 0 ? zero - w : zero;
+    const cls = ch.type === "div" ? (r.v < 0 ? "neg" : "pos") : (r.s ? "s1" : "s0");
+    const tip = r.tip || ((r.group ? r.group + "・" : "") + r.label + "：" + r.text);
+    rows += '<div class="ch-row" title="'+tip+'"><span class="ch-label">'+r.label+'</span>'+
+      '<span class="ch-track">'+(ch.type === "div" ? '<i class="ch-zero" style="left:'+zero+'%"></i>' : '')+
+      '<i class="ch-bar '+cls+(r.v < 0 ? ' left' : '')+'" style="left:'+left+'%;width:'+w+'%"></i></span>'+
+      '<span class="ch-val">'+r.text+'</span></div>';
+  });
+  const legend = ch.series ? '<div class="ch-legend">'+ch.series.map(function(s, i){ return '<span><i class="s'+i+'"></i>'+s+'</span>'; }).join("")+'</div>' : '';
+  const aria = ch.title + (/[？。]$/.test(ch.title) ? "" : "。") + ch.rows.map(function(r){ return (r.group ? r.group + "，" : "") + r.label + " " + r.text; }).join("；");
+  return '<figure class="chart" role="img" aria-label="'+aria+'"><figcaption>'+ch.title+'</figcaption>'+legend+
+    '<div class="ch-rows'+(ch.type === "div" ? ' div' : '')+'">'+rows+
+    (ch.type === "div" ? '<div class="ch-row ch-axisrow"><span></span><span class="ch-axis"><span>越高越少</span><span>0</span><span>越高越多</span></span><span></span></div>' : '')+'</div>'+
+    '<p class="ch-note">'+ch.note+'<br>資料來源：'+ch.src+'</p></figure>';
+}
+
+function renderTalk(rd, c){
+  const hook = c.res.hook || c.o.hook || "";
+  const extra = rd.extra ? rd.extra(c) : "";
+  const note = rd.roleNote && rd.roleNote[R.id] ? rd.roleNote[R.id] : "";
+  const v = c.voice || (c.voice = pickVoice(rd));
+  return '<div class="talk">'+
+    '<div class="hook-card"><span class="label you">你的這一步</span>'+(hook?'<p class="hook">'+hook+'</p>':'')+
+      (extra?'<p class="extra">'+extra+'</p>':'')+(note?'<p class="extra">'+note+'</p>':'')+'</div>'+
+    '<div class="data-card"><div class="bignum">'+rd.big.num+'<small>'+rd.big.unit+'</small></div>'+
+      '<div><span class="label world">真實世界裡</span><p><b>'+rd.big.desc+'</b></p><p class="small">'+rd.fact+'</p></div>'+
+      (rd.chart ? chartHtml(rd.chart) : '')+'</div>'+
+    '<div class="quote-card"><span class="label voice">研究中的學生</span><q>'+v.q+'</q><cite>'+v.who+'（'+v.src+'）</cite></div>'+
+    '<div class="sticky"><b>想一想</b>'+rd.ask+'</div>'+
+    (rd.design?'<p class="design">遊戲設計：'+rd.design+'</p>':'')+
+  '</div>';
+}
+
+function choose(rd, o){
+  const missedBefore = S.missed.length;
+  let res = o.run ? o.run() : { eff:o.eff, text:o.text };
+  const cost = (o._cost!=null) ? o._cost : o.cost;
+  if (o.premium) S.premiumUsed = true;
+  if (o._extra) S.extraPaid += 1;
+  if (o._net || (rd.builder && R.net && o.cost>0)) S.netPaid += 1;
+  if (o._read) S.readPaid += 1;
+  if (o.assist) S.assistUsed += 1;
+  if (o.caught || res.caught) S.caught = true;
+  if (o.fixBias) S.biasFixed = true;
+  if (o.tier) S.promptTier = o.tier;
+  S.time -= cost;
+  const d = applyEff(res.eff || {});
+  let chips = d.map(function(x){ return '<span class="chip '+(x[1]>0?"up":"down")+'">'+STAT_ICON[x[0]]+STAT_NAMES[x[0]]+' '+(x[1]>0?"+":"")+x[1]+'</span>'; }).join("");
+  if (cost) chips += '<span class="chip down">時間 −'+cost+'</span>';
+  const ctx = { o:o, res:res, unthought:(S.hiddenNow.length && !S.revealed) ? S.hiddenNow.slice() : [], revealed:S.revealed };
+  ctx.unthought.forEach(function(l){ S.unthought.push(l+"（"+rd.title.split("：")[0]+"）"); });
+  const talk = renderTalk(rd, ctx);
+  const gotWorse = S.missed.length>missedBefore || (res.eff && res.eff.grade<0);
+  const mood = gotWorse ? "sad" : ((res.eff && res.eff.und>0) ? "happy" : "neutral");
+  const roundIdx = S.round;
+  S.revealed = false;
+  S.hiddenNow = [];
+  const bumps = d.map(function(x){ return x[0]; });
+  const last = roundIdx+1>=ROUNDS.length;
+  app.innerHTML = '<div class="screen">'+hud(bumps)+stageAndDialog(rd, '<div>'+res.text+'</div><div class="chips">'+chips+'</div>', mood)+
+    talk+'<div class="btn-row"><button class="btn big" id="next">'+(last?"看學期成績單 ▶":"下一關 ▶")+'</button></div></div>';
+  S.round++;
+  document.getElementById("next").onclick = last ? renderEnd : renderRound;
+  window.scrollTo(0,0);
+}
+
+/* ---------- end ---------- */
+
+function topType(){
+  const order = ["reflective","resourceful","resistive","receptive"];
+  let best = order[0];
+  order.forEach(function(k){ if (S.pos[k] > S.pos[best]) best = k; });
+  return best;
+}
+function pct(v, max){ return Math.max(0, Math.min(100, Math.round(v/max*100))); }
+
+function medal(color, inner){
+  return '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 2 L18 14 L22 14 L28 2 Z" fill="#c2452d"/><circle cx="20" cy="25" r="13" fill="'+color+'" stroke="#fff" stroke-width="3"/>'+inner+'</svg>';
+}
+function achievements(){
+  return [
+    { on:S.caught, name:"抓錯高手", desc:"抓到 AI 的錯誤", ic:medal("#3a7ca5",'<path d="M14 25 l4 4 l8 -9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>') },
+    { on:S.biasFixed, name:"偏誤偵測", desc:"看見並修正 AI 的偏誤", ic:medal("#8f3f5e",'<circle cx="20" cy="25" r="5" fill="none" stroke="#fff" stroke-width="3"/><circle cx="20" cy="25" r="1.5" fill="#fff"/>') },
+    { on:S.promptTier==="high", name:"提示達人", desc:"寫出具體、有用的提示", ic:medal("#2e8b57",'<rect x="13" y="19" width="14" height="10" rx="3" fill="#fff"/><path d="M16 31 l3 -2" stroke="#fff" stroke-width="2"/>') },
+    { on:S.revealCount>0, name:"停下來想", desc:"刻意停下來找更好的做法", ic:medal("#e0a526",'<ellipse cx="21" cy="23" rx="7" ry="5" fill="#fff"/><circle cx="14" cy="30" r="1.8" fill="#fff"/>') },
+    { on:S.assistUsed>0, name:"善用輔具", desc:"用工具跨過閱讀門檻", ic:medal("#7b57c2",'<path d="M14 22 v6 h4 l5 4 v-14 l-5 4 z" fill="#fff"/>') }
+  ];
+}
+
+function renderEnd(){
+  const gradeScore = pct(S.grade, MAX_GRADE);
+  const examScore = pct(S.und + R.know*2, MAX_EXAM);
+  const tt = topType();
+  const posMax = Math.max(1, S.pos.receptive, S.pos.resistive, S.pos.resourceful, S.pos.reflective);
+  plays = plays.filter(function(x){ return x.id!==R.id; });
+  plays.push({ id:R.id, name:R.name, grade:gradeScore, exam:examScore, judge:S.judge, type:TYPES[tt].name, missed:S.missed.length, unthought:S.unthought.length });
+  saveHistory();
+
+  let lockedTotal = 0;
+  Object.keys(S.lockedMap).forEach(function(k){ lockedTotal += S.lockedMap[k]; });
+  const bg = [];
+  bg.push(R.name+"一開始有 "+R.time+" 點時間，結束時剩 "+S.time+" 點。"+(R.id==="zhihan"?"因為要打工，她的時間最少，深入使用 AI 的選項常常負擔不起。研究也發現，面臨經濟壓力的學生，AI 使用較偏向彌補性質（轉引自 Manganello et al. 2026：6）。":""));
+  if (lockedTotal) bg.push("這一局有 "+lockedTotal+" 個選項，因為「沒人教過」或「不是付費版」而無法選擇。PISA 顯示，弱勢學生較少在課堂上被教導評估 AI 生成的內容（OECD 2026: 240）。");
+  if (R.guide-1<=0) bg.push(R.name+"一開始的 AI 認知很低，把 AI 當成比較聰明的 Google。"+(S.revealCount
+    ? "這一局你停下來想了 "+S.revealCount+" 次，每次都要多花 1 點時間，才會想到更認真使用 AI 的做法。"
+    : "這一局你一次都沒有停下來想，所以沒有看到那些更認真使用 AI 的做法。"));
+  if (S.extraPaid) bg.push("你有 "+S.extraPaid+" 次因為不熟悉認真使用 AI 的方法，多花了時間。對 AI 認知較高的角色，同樣的做法不必付出這些代價。");
+  if (R.paid) bg.push(S.premiumUsed ? "你用了付費功能，作業完成得又快又好，但理解沒有因此變深。" : "你有付費版，但這局沒有用上付費功能。付費版提升的是效率，不直接帶來理解。");
+  bg.push(S.noticedR3 ? "第三關你察覺了 AI 的錯誤，這來自學科基礎與累積的 AI 認知。" : "第三關你沒有察覺 AI 的錯誤。學科基礎"+(R.know<=1?"較薄":"中等")+"時，錯誤看起來和正確答案一樣可信。");
+  if (R.resist) bg.push("芷涵對刻板印象的敏感，讓她不需要任何課程就察覺了 AI 的偏誤。問題在於，她有沒有剩下時間去處理它。");
+  if (R.net) bg.push("網路不穩讓你有 "+S.netPaid+" 次多等了時間。學校有電腦，缺的是穩定的網路和固定教你的老師，這讓不用 AI 的選項變得相對划算。");
+  if (R.dys) bg.push((S.readPaid ? "閱讀大量文字讓你有 "+S.readPaid+" 次多花了時間。" : "")+
+    (S.assistUsed ? "你用了 "+S.assistUsed+" 次 AI 或語音工具當作閱讀的輔具。" : "這一局你沒有用到輔具選項。")+
+    "同樣是請 AI 整理重點，對你來說是跨過閱讀門檻的輔助，和讓 AI 代替你思考並不相同。");
+
+  const typeBars = ["receptive","resistive","resourceful","reflective"].map(function(k){
+    return '<div class="bar-row"><span>'+TYPES[k].name+'</span><span class="bar"><span style="width:'+pct(S.pos[k],posMax)+'%;background:'+TYPES[k].color+'"></span></span><span>'+S.pos[k]+'</span></div>';
+  }).join("");
+  const ach = achievements().map(function(a){
+    return '<div class="ach'+(a.on?"":" off")+'">'+a.ic+'<div><b>'+a.name+'</b><span>'+(a.on?a.desc:"未解鎖："+a.desc)+'</span></div></div>';
+  }).join("");
+  const mood = examScore>=70 ? "happy" : (examScore<40 ? "sad" : "neutral");
+
+  app.innerHTML = '<div class="screen">'+
+    '<div class="report">'+
+      '<div class="stamp" style="color:'+TYPES[tt].color+';border-color:'+TYPES[tt].color+'">'+TYPES[tt].name+'</div>'+
+      '<div class="report-head">'+portrait(R, mood)+'<div><div class="small muted">學期成績單</div><h1>'+R.name+'</h1><div class="small muted">'+R.tag+'</div></div></div>'+
+      '<div class="scores"><div class="score"><div class="n" style="color:var(--grade)">'+gradeScore+'</div><div class="t">作業成績（可以用 AI）</div></div>'+
+        '<div class="score"><div class="n" style="color:var(--und)">'+examScore+'</div><div class="t">期末考（不能用 AI）</div></div></div>'+
+      '<p class="small muted">期末考反映的是你真正理解了多少，加上原本的學科基礎。</p>'+
+      '<h3>你的'+term("自我定位")+'：'+TYPES[tt].name+'</h3><p>'+TYPES[tt].desc+'</p>'+
+      '<div class="bars">'+typeBars+'</div>'+
+      '<p class="small muted">四種類型來自 Manganello 等人（2026: 5）整理 Yang 等人（2024）的質性訪談。他們也指出，較早發展出策略性定位的學生會累積優勢，形成自我強化的循環（Manganello et al. 2026: 9）。</p>'+
+      '<h3>成就徽章</h3><div class="achv">'+ach+'</div>'+
+    '</div>'+
+    (S.missed.length ? '<div class="panel"><h2>老師的評語：你沒注意到或沒處理的事</h2><ul class="clean">'+S.missed.map(function(m){ return "<li>"+m+"</li>"; }).join("")+'</ul></div>' : '')+
+    (S.unthought.length ? '<div class="panel"><h2>你沒想到的做法</h2><p class="small muted">這些做法沒有被禁止，只是以'+R.name+'對 AI 的認知，不會自然想到要這樣做。</p><ul class="clean">'+S.unthought.map(function(m){ return "<li>"+m+"</li>"; }).join("")+'</ul>'+
+      '<p class="small muted">研究發現，部分中學生把 ChatGPT 等同於 Google，以為它直接從網路擷取資訊（Cheung et al. 2024，轉引自 Park 2025：7）；不了解 AI 運作方式的學生，也傾向過度依賴 AI 的回答（Iwasawa et al. 2023，轉引自 Park 2025：9）。</p></div>' : '')+
+    '<div class="panel"><h2>'+R.name+'的處境如何影響這一局</h2><ul class="clean">'+bg.map(function(b){ return "<li>"+b+"</li>"; }).join("")+'</ul></div>'+
+    compareCard()+realDataCard()+
+    '<div class="btn-row"><button class="btn big" id="again">換一位同學再玩</button><button class="btn ghost" id="home">回到標題畫面</button></div>'+
+    refsCard()+'</div>';
+  document.getElementById("again").onclick = function(){ selId = null; renderRoles(); };
+  document.getElementById("home").onclick = renderIntro;
+  window.scrollTo(0,0);
+}
+
+function compareCard(){
+  if (!plays.length) return "";
+  const rows = ROLES.map(function(r){
+    const h = plays.find(function(x){ return x.id===r.id; });
+    if (!h) return '<tr><td>'+portrait(r,"neutral")+r.name+'</td><td colspan="6" class="muted">還沒玩過</td></tr>';
+    return '<tr><td>'+portrait(r,"neutral")+h.name+'</td><td>'+h.grade+'</td><td>'+h.exam+'</td><td>'+h.judge+'</td><td>'+h.type+'</td><td>'+h.missed+'</td><td>'+(h.unthought||0)+'</td></tr>';
+  }).join("");
+  return '<div class="panel"><h2>六位同學的成績單</h2><p class="small muted">試著用每位同學玩一次，並盡量做出「最好的選擇」，看看結果是否仍然不同。</p>'+
+    '<div class="table-wrap"><table><thead><tr><th>同學</th><th>作業成績</th><th>期末考</th><th>AI 認知</th><th>自我定位</th><th>沒注意到的事</th><th>沒想到的做法</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+
+function realDataCard(){
+  return '<div class="panel"><h2>真實世界的數據</h2><ul class="clean">'+
+    '<li>OECD 國家的 15 歲學生中，只有 14% 從未或幾乎從未用 AI 完成課業（OECD 2026: 237）。</li>'+
+    '<li>社經地位可解釋各國國內科學表現差異的 12%；弱勢學生中有 37% 為科學低成就者，優勢學生只有 12%（OECD 2026: 69）。</li>'+
+    '<li>幾乎每天用 AI 輔助學習、與很少使用的學生，科學表現都低於不使用者；每週使用者則與不使用者相近（OECD 2026: 239）。</li>'+
+    '<li>約六成學生曾在課堂上被要求評估 AI 生成的資訊，但弱勢學生較少獲得這類任務，OECD 稱之為「AI 時代裡一種新型態的社經落差」（OECD 2026: 240）。</li>'+
+    '<li>提示品質可以解釋 AI 產出品質變異的 53% 到 78%（Knoth et al. 2024）。</li>'+
+  '</ul></div>';
+}
+
+function refsCard(){
+  return '<div class="panel refs"><h3>參考書目</h3>'+
+    '<p>Gonzabay-Jiménez, Esteban Fabricio et al., 2026, “Academic Performance and Inequality: Can Generative AI Widen the Digital Divide in Higher Education?” Pp. 193-204 in <i>Emerging Technologies in Applied Engineering and Education</i>, edited by Jorge Buele, Guillermo Palacios-Navarro and Fátima Avilés-Castillo. Cham: Springer.</p>'+
+    '<p>Khan, Ali Shafqat, 2026, “AI Divide in Education: A Systematic Review of the Role of Socioeconomic Status, Geography, and Educational Institutions.” <i>Pakistan Journal of Social Sciences Review</i> 5(3): 738-754.</p>'+
+    '<p>Knoth, Nils et al., 2024, “AI Literacy and Its Implications for Prompt Engineering Strategies.” <i>Computers and Education: Artificial Intelligence</i> 6: 100225.</p>'+
+    '<p>Manganello, Flavio et al., 2026, “How AI Shapes Student Agency and Educational Stratification: A Qualitative Interpretive Meta-Synthesis.” <i>Frontiers in Human Dynamics</i> 8: 1787728.</p>'+
+    '<p>OECD, 2026, <i>PISA 2025 Results (Volume I): Future-Ready Students</i>. Paris: OECD Publishing.</p>'+
+    '<p>Park, Joonhyeong, 2025, “A Systematic Literature Review of Generative Artificial Intelligence (GenAI) Literacy in Schools.” <i>Computers and Education: Artificial Intelligence</i> 9: 100487.</p>'+
+    '<p>Walter, Yoshija, 2024, “Embracing the Future of Artificial Intelligence in the Classroom: The Relevance of AI Literacy, Prompt Engineering, and Critical Thinking in Modern Education.” <i>International Journal of Educational Technology in Higher Education</i> 21: 15.</p>'+
+  '</div>';
+}
+
+function renderHistoryOnly(){
+  app.innerHTML = '<div class="screen"><div class="sec-title">同學成績單</div>'+compareCard()+
+    '<div class="btn-row"><button class="btn big" id="start">開始遊戲</button><button class="btn ghost" id="clear">清除紀錄</button></div></div>';
+  document.getElementById("start").onclick = renderRoles;
+  document.getElementById("clear").onclick = function(){ plays = []; saveHistory(); renderIntro(); };
+}
+
+/* ---------- rules ---------- */
+function ruleCard(n, title, body){
+  return '<div class="rule"><h3><span class="rule-no">'+n+'</span>'+title+'</h3>'+body+'</div>';
+}
+function rulesHtml(){
+  const ic = function(k){ return '<span class="ic-inline ic-dark">'+STAT_ICON[k]+'</span>'; };
+  return '<div class="modal" role="document">'+
+    '<h2 id="rules-title">遊戲說明</h2>'+
+    '<p class="small muted">角色是依據文獻設計的虛構人物；遊戲中的分數是為了呈現研究發現而設計的簡化模型，不是實證數據。</p>'+
+    '<div class="rules-grid">'+
+    ruleCard(1,"遊戲目標",'<p>扮演一位高中生，用 AI 完成五道學習關卡。學期末會拿到兩個分數：<b>作業成績</b>（可以用 AI）和<b>期末考</b>（不能用 AI）。沒有標準答案，選你覺得最好的做法就好。</p>')+
+    ruleCard(2,"時間",'<p>每個選項右邊的 <span class="ic-inline ic-dark">'+IC.hg(true)+'</span> 是要花掉的時間。每位角色一開始的時間不同，用完之後，需要花時間的選項就不能選了；但不用擔心，每一關都一定有能選的選項，遊戲不會卡住。</p>')+
+    ruleCard(3,"四項數值",'<ul>'+
+      '<li>'+ic("grade")+' <b>作業</b>：交出去的作業表現</li>'+
+      '<li>'+ic("und")+' <b>理解</b>：真正學會多少，決定期末考</li>'+
+      '<li>'+ic("judge")+' <b>AI 認知</b>：對 AI 如何運作、可能在哪裡出錯的理解。越高，越容易發現 AI 的錯誤</li>'+
+      '<li>'+ic("prac")+' <b>練習</b>：用過好的方法就會累積，可以解鎖新的用法</li></ul>')+
+    ruleCard(4,"為什麼有些選項選不了",'<p><b>灰色附鎖頭</b>的選項不能選，原因可能是沒人教過你、不是付費版，或時間不夠。</p><p>有些選項則要<b>多花時間</b>，例如你還不熟悉這種用法、網路不穩，或要讀大量文字。選項下方會寫出原因。</p>')+
+    ruleCard(5,"停下來想一想",'<p>AI 認知低的角色，一開始<b>看不到</b>某些更認真使用 AI 的做法。按下「停下來想一想」並花 1 點時間，這些做法才會出現。沒有想到的做法，會列在結算的「你沒想到的做法」裡。</p>')+
+    ruleCard(6,"第四關：組合提示",'<p>勾選要放進提示裡的內容，右邊的手機會即時組出你的提示。內容越具體，AI 的回答越有用。<b>進階</b>項目要多花時間，有些寫法要先學過或練過才能用。</p>')+
+    ruleCard(7,"每關結束後",'<p>你會看到這一步的意義、真實世界的研究數據、研究中學生說過的話，以及一個「想一想」的問題。名詞下方有虛線的，指著它就能看到解釋。</p>')+
+    ruleCard(8,"建議玩法",'<p>結算時會拿到成績單、自我定位類型和成就徽章。試著換不同角色，每次都盡量做出最好的選擇，再比較六位同學的成績單：同樣努力，起點不同，結果也會不同。</p>')+
+    '</div>'+
+    '<div class="btn-row"><button class="btn" id="rules-close">知道了</button></div>'+
+  '</div>';
+}
+const rulesEl = document.getElementById("rules");
+let rulesOpener = null, rulesAuto = false;
+function openRules(){
+  rulesOpener = document.activeElement;
+  rulesEl.innerHTML = rulesHtml();
+  rulesEl.hidden = false;
+  document.getElementById("rules-close").onclick = closeRules;
+  document.getElementById("rules-close").focus({ preventScroll:true });
+  rulesEl.querySelector(".modal").scrollTop = 0;
+  try { localStorage.setItem("ai-sim-rules-seen", "1"); } catch(e) {}
+}
+function closeRules(){
+  rulesEl.hidden = true;
+  rulesEl.innerHTML = "";
+  if (rulesOpener && rulesOpener.focus && document.body.contains(rulesOpener)) rulesOpener.focus();
+}
+function rulesSeen(){ try { return localStorage.getItem("ai-sim-rules-seen")==="1"; } catch(e) { return false; } }
+document.addEventListener("click", function(e){
+  if (e.target.closest("[data-rules]")) { openRules(); return; }
+  if (!rulesEl.hidden && e.target===rulesEl) closeRules();
+});
+document.addEventListener("keydown", function(e){ if (e.key==="Escape" && !rulesEl.hidden) closeRules(); });
+
+/* ---------- glossary tooltip ---------- */
+const tip = document.getElementById("tip");
+let tipFor = null;
+function showTip(el){
+  tip.textContent = TERMS[el.dataset.term] || "";
+  tip.hidden = false;
+  const r = el.getBoundingClientRect();
+  const w = Math.min(300, window.innerWidth - 32);
+  tip.style.maxWidth = w + "px";
+  const left = Math.min(Math.max(16, r.left), window.innerWidth - w - 16);
+  const top = r.bottom + 8;
+  tip.style.left = left + "px"; tip.style.top = top + "px";
+  const th = tip.getBoundingClientRect().height;
+  if (top + th > window.innerHeight - 8) tip.style.top = Math.max(8, r.top - th - 8) + "px";
+  tipFor = el;
+}
+function hideTip(){ tip.hidden = true; tipFor = null; }
+document.addEventListener("mouseover", function(e){ const el = e.target.closest(".term"); if (el) showTip(el); });
+document.addEventListener("mouseout", function(e){ if (e.target.closest(".term")) hideTip(); });
+document.addEventListener("focusin", function(e){ const el = e.target.closest(".term"); if (el) showTip(el); });
+document.addEventListener("focusout", function(e){ if (e.target.closest(".term")) hideTip(); });
+document.addEventListener("click", function(e){
+  const el = e.target.closest(".term");
+  if (el) { e.preventDefault(); if (tipFor===el) hideTip(); else showTip(el); }
+  else if (!e.target.closest("#tip")) hideTip();
+});
+window.addEventListener("scroll", hideTip, { passive:true });
+
+renderIntro();
+</script>
+</body>
+</html>
